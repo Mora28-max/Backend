@@ -1,0 +1,272 @@
+openapi: 3.0.3
+paths:
+  /api/payments:
+    get:
+      summary: Listar pagos de un cliente
+      tags:
+        - Pagos
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: customer_id
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Lista de pagos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentCollection"
+        "400":
+          description: No se especificó el usuario
+        "401":
+          description: No autorizado
+    post:
+      summary: Registrar un nuevo pago
+      tags:
+        - Pagos
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StorePaymentRequest"
+      responses:
+        "201":
+          description: Pago registrado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  payment:
+                    $ref: "#/components/schemas/PaymentResource"
+        "500":
+          description: Error al registrar el pago
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "401":
+          description: No autorizado
+  /api/payments/{id}:
+    get:
+      summary: Obtener un pago por ID
+      tags:
+        - Pagos
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Pago encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentResource"
+        "404":
+          description: Pago no encontrado
+        "401":
+          description: No autorizado
+    patch:
+      summary: Actualizar un pago
+      tags:
+        - Pagos
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePaymentRequest"
+      responses:
+        "200":
+          description: Pago actualizado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  payment:
+                    $ref: "#/components/schemas/PaymentResource"
+        "500":
+          description: Error al actualizar el pago
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  error:
+                    type: string
+        "401":
+          description: No autorizado
+    delete:
+      summary: Cancelar un pago
+      tags:
+        - Pagos
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Pago cancelado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "500":
+          description: Error al cancelar el pago
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  error:
+                    type: string
+        "401":
+          description: No autorizado
+
+components:
+  schemas:
+    PaymentResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        customer_id:
+          type: integer
+        customer:
+          type: string
+        address:
+          type: string
+        use_of_type:
+          type: string
+        classification_type:
+          type: string
+        folio:
+          type: string
+        water:
+          type: number
+        water_discount:
+          type: number
+        drainage:
+          type: number
+        drainage_discount:
+          type: number
+        vat:
+          type: number
+        total:
+          type: number
+        total_text:
+          type: string
+        payment_type:
+          type: string
+        payment_date:
+          type: string
+          format: date-time
+        notes:
+          type: string
+        period:
+          type: object
+          properties:
+            start:
+              type: object
+              properties:
+                month:
+                  type: integer
+                year:
+                  type: integer
+            end:
+              type: object
+              properties:
+                month:
+                  type: integer
+                year:
+                  type: integer
+        created_by:
+          type: string
+        canceled:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    PaymentCollection:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/PaymentResource"
+        current_page:
+          type: integer
+        last_page:
+          type: integer
+        per_page:
+          type: integer
+        total:
+          type: integer
+    StorePaymentRequest:
+      type: object
+      properties:
+        customer_id:
+          type: integer
+        id_months_to_pay:
+          type: array
+          items:
+            type: integer
+        payment_type_id:
+          type: integer
+        notes:
+          type: string
+      required:
+        - customer_id
+        - id_months_to_pay
+        - payment_type_id
+    UpdatePaymentRequest:
+      type: object
+      properties:
+        payment_type_id:
+          type: integer
+        notes:
+          type: string
+      required:
+        - payment_type_id

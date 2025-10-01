@@ -1,0 +1,180 @@
+openapi: 3.0.3
+paths:
+  /api/readings:
+    get:
+      summary: Listar lecturas pendientes del mes
+      tags:
+        - Lecturas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: per_page
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Lista paginada de lecturas pendientes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeasuredServCustomerCollection"
+        "401":
+          description: No autorizado
+  /api/readings/{customer_id}:
+    get:
+      summary: Obtener la lectura de un cliente por mes y año
+      tags:
+        - Lecturas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: customer_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: month
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: year
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Lectura encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeasuredServCustomerResource"
+        "404":
+          description: Lectura no encontrada
+        "401":
+          description: No autorizado
+  /api/readings/{monthly_service_charge_id}:
+    patch:
+      summary: Actualizar una lectura de medidor
+      tags:
+        - Lecturas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: monthly_service_charge_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateReadingRequest"
+      responses:
+        "200":
+          description: Lectura actualizada correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "500":
+          description: Error al actualizar la lectura
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  error:
+                    type: string
+        "401":
+          description: No autorizado
+  /api/readings/filter:
+    post:
+      summary: Filtrar lecturas pendientes
+      tags:
+        - Lecturas
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FilterReadingRequest"
+      responses:
+        "200":
+          description: Lista paginada de lecturas filtradas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeasuredServCustomerCollection"
+        "401":
+          description: No autorizado
+
+components:
+  schemas:
+    MeasuredServCustomerResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        customer_id:
+          type: integer
+        month:
+          type: string
+        year:
+          type: string
+        reading:
+          type: number
+        status:
+          type: string
+        # Agrega aquí más propiedades según tu modelo MonthlyServiceCharge
+    MeasuredServCustomerCollection:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/MeasuredServCustomerResource"
+        current_page:
+          type: integer
+        last_page:
+          type: integer
+        per_page:
+          type: integer
+        total:
+          type: integer
+    UpdateReadingRequest:
+      type: object
+      properties:
+        reading:
+          type: number
+        # Agrega aquí los campos requeridos para actualizar la lectura
+      required:
+        - reading
+    FilterReadingRequest:
+      type: object
+      properties:
+        search:
+          type: string
+        month:
+          type: string
+        year:
+          type: string
+        status:
+          type: string

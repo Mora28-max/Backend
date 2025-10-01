@@ -1,0 +1,85 @@
+openapi: 3.0.3
+paths:
+  /api/logs:
+    get:
+      summary: Listar registros de actividad
+      tags: [Logs]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "Report"
+          description: Filtra por el nombre del log (log_name)
+        - name: subject
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: 1
+          description: Filtra por el ID del sujeto relacionado (subject_id)
+      responses:
+        "200":
+          description: Lista paginada de registros de actividad
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivityLogCollection"
+        "403":
+          description: No tienes permiso para ver los registros de actividad
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: No tienes permiso para ver los registros de actividad.
+
+components:
+  schemas:
+    ActivityLogResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        description:
+          type: string
+        causer:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+        properties:
+          type: object
+          properties:
+            attributes:
+              type: object
+            old:
+              type: object
+            new:
+              type: object
+        subject:
+          type: integer
+          nullable: true
+        log_name:
+          type: string
+          nullable: true
+    ActivityLogCollection:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActivityLogResource"
+        current_page:
+          type: integer
+        last_page:
+          type: integer
+        per_page:
+          type: integer
+        total:
+          type: integer

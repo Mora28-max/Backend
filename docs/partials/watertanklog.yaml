@@ -1,0 +1,155 @@
+openapi: 3.0.3
+paths:
+  /api/water-tank-logs:
+    get:
+      summary: Listar registros de tanques de agua
+      tags:
+        - Tank Logs
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: tank
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: ID del tanque de agua
+        - name: month
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: 8
+          description: Mes del registro
+        - name: year
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: 2025
+          description: Año del registro
+      responses:
+        "200":
+          description: Lista de registros de tanques de agua
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WaterTankLogCollection"
+        "401":
+          description: No autorizado
+
+    post:
+      summary: Crear registro de tanque de agua
+      tags:
+        - Tank Logs
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreWaterTankLogRequest"
+      responses:
+        "201":
+          description: Registro creado con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Registro creado con éxito
+                  data:
+                    $ref: "#/components/schemas/WaterTankLogResource"
+        "400":
+          description: Error de validación
+        "401":
+          description: No autorizado
+
+  /api/water-tank-logs/{id}:
+    delete:
+      summary: Eliminar registro de tanque de agua
+      tags:
+        - Tank Logs
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Registro eliminado con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Registro eliminado con éxito
+        "404":
+          description: Registro no encontrado
+        "401":
+          description: No autorizado
+
+components:
+  schemas:
+    WaterTankLogResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        water_tank:
+          type: string
+        water_level:
+          type: number
+          format: float
+        water_reception:
+          type: number
+          format: float
+        log_date:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+
+    WaterTankLogCollection:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/WaterTankLogResource"
+        current_page:
+          type: integer
+        last_page:
+          type: integer
+        per_page:
+          type: integer
+        total:
+          type: integer
+
+    StoreWaterTankLogRequest:
+      type: object
+      properties:
+        water_tank_id:
+          type: integer
+        water_level:
+          type: number
+          format: float
+        water_reception:
+          type: number
+          format: float
+        log_date:
+          type: string
+          format: date-time
+      required:
+        - water_tank_id
+        - water_level
+        - water_reception

@@ -1,0 +1,209 @@
+openapi: 3.0.3
+paths:
+  /api/report-notes:
+    get:
+      summary: Listar notas de un reporte
+      tags:
+        - Notas de Reporte
+      parameters:
+        - name: report_id
+          in: query
+          required: true
+          schema:
+            type: integer
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de notas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoteCollection"
+        "400":
+          description: El id del reporte es obligatorio
+        "401":
+          description: No autorizado
+    post:
+      summary: Crear una nota para un reporte
+      tags:
+        - Notas de Reporte
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreNoteRequest"
+      responses:
+        "201":
+          description: Nota creada exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  note:
+                    $ref: "#/components/schemas/NoteResource"
+        "500":
+          description: Error al crear la nota
+  /api/report-notes/{id}:
+    get:
+      summary: Obtener una nota por ID
+      tags:
+        - Notas de Reporte
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Nota encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoteResource"
+        "401":
+          description: No autorizado
+        "404":
+          description: Nota no encontrada
+    patch:
+      summary: Actualizar una nota
+      tags:
+        - Notas de Reporte
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateNoteRequest"
+      responses:
+        "200":
+          description: Nota actualizada exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  messages:
+                    type: string
+                  note:
+                    $ref: "#/components/schemas/NoteResource"
+        "500":
+          description: Error al actualizar la nota
+    delete:
+      summary: Eliminar una nota
+      tags:
+        - Notas de Reporte
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Nota eliminada exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "500":
+          description: Error al eliminar la nota
+  /api/report-notes/{report_id}/add-images-for-pdf:
+    post:
+      summary: Agregar imágenes para PDF al reporte
+      tags:
+        - Notas de Reporte
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: report_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateReportImageRequest"
+      responses:
+        "200":
+          description: Imágenes agregadas exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "500":
+          description: Error al agregar imágenes para PDF
+
+components:
+  schemas:
+    NoteResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        report_id:
+          type: integer
+        note:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    NoteCollection:
+      type: array
+      items:
+        $ref: "#/components/schemas/NoteResource"
+    StoreNoteRequest:
+      type: object
+      properties:
+        report_id:
+          type: integer
+        note:
+          type: string
+      required:
+        - report_id
+        - note
+    UpdateNoteRequest:
+      type: object
+      properties:
+        note:
+          type: string
+      required:
+        - note
+    UpdateReportImageRequest:
+      type: object
+      properties:
+        images_for_pdf:
+          type: string
+      required:
+        -

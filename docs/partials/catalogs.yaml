@@ -1,0 +1,426 @@
+openapi: 3.0.3
+paths:
+  /api/report-categories:
+    get:
+      summary: Listar todas las categorías de reportes
+      tags:
+        - Catálogos
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de recursos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ReportCategoryResource"
+        "401":
+          description: No autorizado
+  /api/payment-types:
+    get:
+      summary: Listar todos los tipos de pago
+      tags:
+        - Catálogos
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de recursos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/PaymentTypesResource"
+        "401":
+          description: No autorizado
+  /api/process-status:
+    get:
+      summary: Listar todos los estados de procesos
+      tags:
+        - Catálogos
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de recursos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ProcessStatusResource"
+        "401":
+          description: No autorizado
+  /api/classification-types:
+    get:
+      summary: Listar todos los tipos de clasificación
+      tags:
+        - Catálogos
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de recursos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ClassificationTypeResource"
+        "401":
+          description: No autorizado
+  /api/customer-types:
+    get:
+      summary: Listar todos los tipos de clientes
+      tags:
+        - Catálogos
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de recursos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/CustomerTypeResource"
+        "401":
+          description: No autorizado
+  /api/service-types:
+    get:
+      summary: Listar todos los tipos de servicios
+      tags:
+        - Catálogos
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de recursos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ServiceTypeResource"
+        "401":
+          description: No autorizado
+  /api/use-of-types:
+    get:
+      summary: Listar todos los tipos de uso
+      tags:
+        - Catálogos
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de recursos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/UseOfTypeResource"
+        "401":
+          description: No autorizado
+  /api/classification-of-materials:
+    get:
+      summary: Listar todas las clasificaciones de materiales
+      tags:
+        - Catálogos
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de recursos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ClassificationOfMaterialsResource"
+        "401":
+          description: No autorizado
+  /api/report-priorities:
+    get:
+      summary: Listar todas las prioridades de reportes
+      tags:
+        - Catálogos
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de recursos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ReportPriorityResource"
+        "401":
+          description: No autorizado
+  /api/reports-subcategories:
+    get:
+      summary: Listar todas las subcategorías de reportes
+      tags:
+        - Catálogos
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de recursos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ReportSubcategoryResource"
+        "401":
+          description: No autorizado
+  /api/reports-child-subcategories:
+    get:
+      summary: Listar todas las subcategorías hijas de reportes
+      tags:
+        - Catálogos
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de recursos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ReportChildSubcategoryResource"
+        "401":
+          description: No autorizado
+  /api/service-status:
+    get:
+      summary: Listar todos los estados de servicio
+      tags:
+        - Catálogos
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de recursos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ServiceStatusResource"
+        "401":
+          description: No autorizado
+  /api/unities:
+    get:
+      summary: Listar todas las unidades
+      tags:
+        - Catálogos
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de recursos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/UnitiesResource"
+        "401":
+          description: No autorizado
+  /api/roles:
+    get:
+      summary: Listar todos los roles
+      tags:
+        - Catálogos
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de roles
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/RoleResource"
+        "401":
+          description: No autorizado
+  /api/water-tanks:
+    get:
+      summary: Listar todos los tanques de agua
+      tags:
+        - Catálogos
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de tanques de agua
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/WaterTankResource"
+        "401":
+          description: No autorizado
+components:
+  schemas:
+    ReportCategoryResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    ProcessStatusResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    PaymentTypesResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    ClassificationTypeResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    CustomerTypeResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    ServiceTypeResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    UseOfTypeResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    ClassificationOfMaterialsResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    ReportPriorityResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    ReportSubcategoryResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    ReportChildSubcategoryResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    ServiceStatusResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    UnitiesResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    RoleResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    WaterTankResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+security:
+  - bearerAuth: []

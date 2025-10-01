@@ -1,0 +1,245 @@
+openapi: 3.0.3
+paths:
+  /api/remaining-payments:
+    get:
+      summary: Listar todos los adeudos restantes
+      tags:
+        - Adeudos Restantes
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de adeudos restantes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RemainingPaymentCollection"
+        "401":
+          description: Error de autorización
+    post:
+      summary: Crear un nuevo adeudo restante
+      tags:
+        - Adeudos Restantes
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreRemainingPaymentRequest"
+      responses:
+        "201":
+          description: Adeudo creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RemainingPaymentResource"
+        "401":
+          description: Error de autorización
+        "400":
+          description: Error de validación
+  /api/remaining-payments/{id}:
+    get:
+      summary: Obtener un adeudo restante por ID
+      tags:
+        - Adeudos Restantes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID del adeudo restante
+      responses:
+        "200":
+          description: Adeudo encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RemainingPaymentResource"
+        "404":
+          description: Recurso no encontrado
+    patch:
+      summary: Actualizar un adeudo restante existente
+      tags:
+        - Adeudos Restantes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID del adeudo restante
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRemainingPaymentRequest"
+      responses:
+        "200":
+          description: Adeudo actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RemainingPaymentResource"
+        "404":
+          description: Recurso no encontrado
+        "400":
+          description: Error de validación
+    delete:
+      summary: Eliminar un adeudo restante existente
+      tags:
+        - Adeudos Restantes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID del adeudo restante
+      responses:
+        "204":
+          description: Adeudo eliminado exitosamente
+        "404":
+          description: Recurso no encontrado
+  /api/pay-remaining-payment:
+    post:
+      summary: Pagar un adeudo restante
+      tags:
+        - Adeudos Restantes
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PayRemainingPaymentRequest"
+      responses:
+        "200":
+          description: Pago procesado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "400":
+          description: Error de validación
+        "404":
+          description: Recurso no encontrado
+        "500":
+          description: Error al procesar el pago
+components:
+  schemas:
+    RemainingPaymentResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        tracking_folio:
+          type: string
+        subtotal:
+          type: number
+          format: float
+        discount:
+          type: number
+          format: float
+        vat:
+          type: number
+          format: float
+        total:
+          type: number
+          format: float
+        payment_folio:
+          type: string
+        payment_type:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        breakdown:
+          type: string
+        canceled:
+          type: boolean
+        monthly_payment_statement_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    RemainingPaymentCollection:
+      type: array
+      items:
+        $ref: "#/components/schemas/RemainingPaymentResource"
+    StoreRemainingPaymentRequest:
+      type: object
+      properties:
+        customer_id:
+          type: integer
+        tracking_folio:
+          type: string
+        subtotal:
+          type: number
+          format: float
+        vat:
+          type: number
+          format: float
+        breakdown:
+          type: string
+        note:
+          type: string
+        payment_type_id:
+          type: integer
+      required:
+        - customer_id
+        - tracking_folio
+        - subtotal
+    UpdateRemainingPaymentRequest:
+      type: object
+      properties:
+        subtotal:
+          type: number
+          format: float
+        vat:
+          type: number
+          format: float
+        discount:
+          type: number
+          format: float
+        breakdown:
+          type: string
+        note:
+          type: string
+        payment_type_id:
+          type: integer
+    PayRemainingPaymentRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        payment_type_id:
+          type: integer
+        type_remaining:
+          type: string
+          enum:
+            - rep
+            - notif
+            - excess
+            - extra
+        note:
+          type: string
+      required:
+        - id
+        - payment_type_id
+        - type_remaining

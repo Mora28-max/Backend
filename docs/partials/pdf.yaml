@@ -1,0 +1,261 @@
+openapi: 3.0.3
+paths:
+  /api/pdf/receipt/{folio}:
+    get:
+      summary: Descargar recibo de pago en PDF
+      tags:
+        - PDF
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: folio
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Recibo de pago PDF generado exitosamente
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: Recibo no encontrado
+        "400":
+          description: Folio inválido
+
+  /api/pdf/remaining-receipt/{folio}:
+    get:
+      summary: Descargar recibo de pago restante en PDF
+      tags:
+        - PDF
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: folio
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Recibo de pago restante PDF generado exitosamente
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: Recibo no encontrado
+        "400":
+          description: Folio inválido
+
+  /api/pdf/water-receipt/{folio}:
+    get:
+      summary: Descargar recibo de agua en PDF
+      tags:
+        - PDF
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: folio
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Recibo de agua PDF generado exitosamente
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: Recibo no encontrado
+        "400":
+          description: Folio inválido
+
+  /api/pdf/report/{id}:
+    get:
+      summary: Descargar reporte en PDF
+      tags:
+        - PDF
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Reporte PDF generado exitosamente
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: Reporte no encontrado
+        "400":
+          description: ID inválido
+
+  /api/customer-view/pdf/receipt/{folio}:
+    get:
+      summary: Descargar recibo de pago en PDF para cliente
+      tags:
+        - PDF Cliente
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: folio
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Recibo de pago PDF generado exitosamente
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: Recibo no encontrado
+        "400":
+          description: Folio inválido
+
+  /api/customer-view/pdf/remaining-receipt/{folio}:
+    get:
+      summary: Descargar recibo de pago restante en PDF para cliente
+      tags:
+        - PDF Cliente
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Recibo de pago restante PDF generado exitosamente
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: Recibo no encontrado
+        "400":
+          description: Folio inválido
+
+  /api/customer-view/pdf/water-receipt/{folio}:
+    get:
+      summary: Descargar recibo de agua en PDF para cliente
+      tags:
+        - PDF Cliente
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Recibo de agua PDF generado exitosamente
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: Recibo no encontrado
+        "400":
+          description: Folio inválido
+
+  /api/customer-view/pdf/report/{id}:
+    get:
+      summary: Descargar reporte en PDF para cliente
+      tags:
+        - PDF Cliente
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Reporte PDF generado exitosamente
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: Reporte no encontrado
+        "400":
+          description: ID inválido
+
+  /api/pdf/cash-register-audit/{id}:
+    get:
+      summary: Descargar auditoría de corte de caja en PDF
+      tags:
+        - PDF
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Auditoría de corte de caja PDF generada exitosamente
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: Auditoría no encontrada
+        "400":
+          description: ID inválido
+
+  /api/pdf/additional-receipt/{folio}:
+    get:
+      summary: Descargar recibo de pago adicional en PDF
+      tags:
+        - PDF
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: folio
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Recibo de pago adicional PDF generado exitosamente
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: Recibo no encontrado
+        "400":
+          description: Folio inválido

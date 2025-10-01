@@ -1,0 +1,182 @@
+openapi: 3.0.3
+paths:
+  /api/customer-view/{id}:
+    get:
+      summary: Obtener datos de un cliente
+      tags:
+        - Vista del Cliente
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Datos del cliente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerResource"
+        "404":
+          description: Cliente no encontrado
+        "401":
+          description: No autorizado
+  /api/customer-view/statistics/{id}:
+    get:
+      summary: Obtener estadísticas del cliente
+      tags:
+        - Vista del Cliente
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Estadísticas del cliente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerStatisticsResource"
+        "404":
+          description: Cliente no encontrado
+        "401":
+          description: No autorizado
+  /api/customer-view/reports/{id}:
+    get:
+      summary: Listar reportes del cliente
+      tags:
+        - Vista del Cliente
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Lista de reportes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerViewReportCollection"
+        "404":
+          description: Cliente no encontrado
+        "401":
+          description: No autorizado
+
+components:
+  schemas:
+    CustomerResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        rfc:
+          type: string
+        voter_key:
+          type: string
+        type_person:
+          type: string
+        address:
+          type: string
+        int_num:
+          type: string
+        ext_num:
+          type: string
+        geolocation:
+          type: string
+        reference:
+          type: string
+        url_image:
+          type: string
+        drainage_use:
+          type: boolean
+        additional_observation:
+          type: string
+        storage_capacity:
+          type: string
+        zone:
+          type: object
+        customer_type:
+          type: object
+        use_of_type:
+          type: object
+        service_type:
+          type: object
+        service_status:
+          type: object
+        classification_type:
+          type: object
+        meter:
+          type: string
+    CustomerStatisticsResource:
+      type: object
+      properties:
+        reports:
+          type: object
+          properties:
+            total_reports:
+              type: integer
+            total_reports_in_progress:
+              type: integer
+        debt:
+          type: object
+          properties:
+            total_debt:
+              type: number
+              format: float
+            total_surcharge:
+              type: number
+              format: float
+    CustomerViewReportCollection:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+          tracking_folio:
+            type: string
+          report_category:
+            type: object
+          report_subcategory:
+            type: object
+          report_priority:
+            type: object
+          process_status:
+            type: object
+          report_child_subcategory:
+            type: object
+          description:
+            type: string
+          breakdown:
+            type: string
+          should_be_paid:
+            type: boolean
+          payment_folio:
+            type: string
+          images_for_pdf:
+            type: string
+          lat:
+            type: number
+            format: float
+          lng:
+            type: number
+            format: float

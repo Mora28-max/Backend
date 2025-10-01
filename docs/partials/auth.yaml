@@ -1,0 +1,186 @@
+openapi: 3.0.3
+paths:
+  /api/login:
+    post:
+      summary: Iniciar sesión y obtener token
+      tags:
+        - Autenticación
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Usuario y token de acceso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResource"
+        "401":
+          description: Credenciales inválidas
+
+  /api/register:
+    post:
+      summary: Registrar un nuevo usuario
+      tags:
+        - Autenticación
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+      responses:
+        "201":
+          description: Usuario registrado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegisterResource"
+        "400":
+          description: Error de validación
+
+  /api/logout:
+    post:
+      summary: Cerrar sesión
+      tags:
+        - Autenticación
+      security:
+        - bearerAuth: []
+      responses:
+        "204":
+          description: Sesión cerrada exitosamente
+        "401":
+          description: Error de autorización
+
+  /api/register/invitation:
+    post:
+      summary: Enviar un token para registrarse
+      tags:
+        - Autenticación
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InvitationRequest"
+      responses:
+        "201":
+          description: Correo de invitación enviado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvitationResource"
+        "400":
+          description: Error de validación
+        "401":
+          description: Error de autorización
+
+components:
+  schemas:
+    LoginResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        firstname:
+          type: string
+        lastname:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        active:
+          type: integer
+        roles:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            role_id:
+              type: integer
+        token:
+          type: string
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required:
+        - email
+        - password
+    RegisterResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        firstname:
+          type: string
+        lastname:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        active:
+          type: integer
+        roles:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        token:
+          type: string
+    RegisterRequest:
+      type: object
+      properties:
+        firstname:
+          type: string
+        lastname:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        access_token:
+          type: string
+      required:
+        - firstname
+        - lastname
+        - phone
+        - email
+        - password
+        - access_token
+    InvitationResource:
+      type: object
+      properties:
+        message:
+          type: string
+    InvitationRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required:
+        - email
+        - password

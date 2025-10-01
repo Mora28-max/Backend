@@ -1,0 +1,96 @@
+openapi: 3.0.3
+paths:
+  /api/extraordinary-accounts:
+    get:
+      summary: Listar todas las cuentas extraordinarias
+      tags:
+        - Cuentas Extraordinarias
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de cuentas extraordinarias
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExtraordinaryAccountCollection"
+        "401":
+          description: Error de autorización
+    post:
+      summary: Crear una nueva cuenta extraordinaria
+      tags:
+        - Cuentas Extraordinarias
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreExtraordinaryAccountRequest"
+      responses:
+        "201":
+          description: Cuenta extraordinaria creada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExtraordinaryAccountResource"
+        "401":
+          description: Error de autorización
+        "404":
+          description: Recurso no encontrado
+  /api/extraordinary-accounts/{id}:
+    delete:
+      summary: Eliminar una cuenta extraordinaria existente
+      tags:
+        - Cuentas Extraordinarias
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Cuenta extraordinaria eliminada exitosamente
+        "404":
+          description: Recurso no encontrado
+        "500":
+          description: Error al eliminar la cuenta extraordinaria
+
+components:
+  schemas:
+    ExtraordinaryAccountResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        name:
+          type: string
+        amount:
+          type: number
+        created_at:
+          type: string
+        updated_at:
+          type: string
+    ExtraordinaryAccountCollection:
+      type: array
+      items:
+        $ref: "#/components/schemas/ExtraordinaryAccountResource"
+    StoreExtraordinaryAccountRequest:
+      type: object
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        amount:
+          type: number
+      required:
+        - code
+        - name
+        - amount

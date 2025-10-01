@@ -1,0 +1,126 @@
+openapi: 3.0.3
+paths:
+  /api/zones:
+    get:
+      summary: Listar todas las zonas
+      tags:
+        - Zonas
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de zonas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ZoneCollection"
+        "401":
+          description: Error de autorización
+
+    post:
+      summary: Crear una nueva zona
+      tags:
+        - Zonas
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreZoneRequest"
+      responses:
+        "201":
+          description: Zona creada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ZoneResource"
+        "404":
+          description: Recurso no encontrado
+        "401":
+          description: Error de autorización
+
+  /api/zones/{id}:
+    put:
+      summary: Actualizar una zona existente
+      tags:
+        - Zonas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateZoneRequest"
+      responses:
+        "200":
+          description: Zona actualizada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ZoneResource"
+        "404":
+          description: Recurso no encontrado
+        "401":
+          description: Error de autorización
+
+    delete:
+      summary: Eliminar una zona
+      tags:
+        - Zonas
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Zona eliminada exitosamente
+        "404":
+          description: Recurso no encontrado
+        "401":
+          description: Error de autorización
+
+components:
+  schemas:
+    ZoneResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        colony_id:
+          type: integer
+    ZoneCollection:
+      type: array
+      items:
+        $ref: "#/components/schemas/ZoneResource"
+    StoreZoneRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        colony_id:
+          type: integer
+      required:
+        - name
+        - colony_id
+    UpdateZoneRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        colony_id:
+          type: integer

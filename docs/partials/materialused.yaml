@@ -1,0 +1,134 @@
+openapi: 3.0.3
+paths:
+  /api/material-used:
+    get:
+      summary: Listar materiales usados en un reporte
+      tags:
+        - Materiales Usados en Reporte
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: report_id
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Lista de materiales usados
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MaterialUsedCollection"
+        "401":
+          description: No autorizado
+    post:
+      summary: Agregar material usado a un reporte
+      tags:
+        - Materiales Usados en Reporte
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreMaterialUsedRequest"
+      responses:
+        "201":
+          description: Material usado agregado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    $ref: "#/components/schemas/MaterialUsedResource"
+        "500":
+          description: Error al agregar el material usado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  error:
+                    type: string
+        "401":
+          description: No autorizado
+  /api/material-used/{id}:
+    delete:
+      summary: Eliminar material usado de un reporte
+      tags:
+        - Materiales Usados en Reporte
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Material usado eliminado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "500":
+          description: Error al eliminar el material usado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  error:
+                    type: string
+        "401":
+          description: No autorizado
+
+components:
+  schemas:
+    MaterialUsedResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        report_id:
+          type: integer
+        material_id:
+          type: integer
+        quantity:
+          type: number
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    MaterialUsedCollection:
+      type: array
+      items:
+        $ref: "#/components/schemas/MaterialUsedResource"
+    StoreMaterialUsedRequest:
+      type: object
+      properties:
+        report_id:
+          type: integer
+        material_id:
+          type: integer
+        quantity:
+          type: number
+      required:
+        - report_id
+        - material_id
+        -

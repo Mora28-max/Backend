@@ -1,0 +1,127 @@
+openapi: 3.0.3
+paths:
+  /api/additional-observations:
+    get:
+      summary: Listar todas las observaciones adicionales
+      tags:
+        - Observaciones Adicionales
+      responses:
+        "200":
+          description: Lista de observaciones adicionales
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AdditionalObservationResource"
+        "401":
+          description: No autorizado
+    post:
+      summary: Crear una nueva observación adicional
+      tags:
+        - Observaciones Adicionales
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreAdditionalObservationRequest"
+      responses:
+        "201":
+          description: Observación creada exitosamente
+        "401":
+          description: No autorizado
+        "400":
+          description: Error de validación
+  /api/additional-observations/{id}:
+    get:
+      summary: Obtener una observación adicional por ID
+      tags:
+        - Observaciones Adicionales
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID de la observación adicional
+      responses:
+        "200":
+          description: Observación encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdditionalObservationResource"
+        "404":
+          description: Observación no encontrada
+    patch:
+      summary: Actualizar una observación adicional existente
+      tags:
+        - Observaciones Adicionales
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID de la observación adicional
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAdditionalObservationRequest"
+      responses:
+        "200":
+          description: Observación actualizada exitosamente
+        "404":
+          description: Observación no encontrada
+        "400":
+          description: Error de validación
+    delete:
+      summary: Eliminar una observación adicional existente
+      tags:
+        - Observaciones Adicionales
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID de la observación adicional
+      responses:
+        "204":
+          description: Observación eliminada exitosamente
+        "404":
+          description: Observación no encontrada
+components:
+  schemas:
+    AdditionalObservationResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        description:
+          type: string
+    StoreAdditionalObservationRequest:
+      type: object
+      properties:
+        code:
+          type: string
+        description:
+          type: string
+      required:
+        - code
+        - description
+    UpdateAdditionalObservationRequest:
+      type: object
+      properties:
+        code:
+          type: string
+        description:
+          type: string
+      required:
+        - code
+        - description

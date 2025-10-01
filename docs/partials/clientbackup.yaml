@@ -1,0 +1,181 @@
+openapi: 3.0.3
+paths:
+  /api/client-backup-contacts:
+    get:
+      summary: Listar todos los contactos de respaldo
+      tags:
+        - Contactos de Respaldo
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: customer_id
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Lista de contactos de respaldo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientBackupContactCollection"
+        "401":
+          description: Error de autorización
+    post:
+      summary: Crear un nuevo contacto de respaldo
+      tags:
+        - Contactos de Respaldo
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreClientBackupContactRequest"
+      responses:
+        "201":
+          description: Contacto de respaldo creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientBackupContactResource"
+        "401":
+          description: Error de autorización
+        "404":
+          description: Recurso no encontrado
+  /api/client-backup-contacts/{id}:
+    get:
+      summary: Obtener un contacto de respaldo por ID
+      tags:
+        - Contactos de Respaldo
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Contacto de respaldo encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientBackupContactResource"
+        "404":
+          description: Recurso no encontrado
+        "500":
+          description: Error al obtener el contacto de respaldo
+    put:
+      summary: Actualizar un contacto de respaldo existente
+      tags:
+        - Contactos de Respaldo
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateClientBackupContactRequest"
+      responses:
+        "200":
+          description: Contacto de respaldo actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientBackupContactResource"
+        "404":
+          description: Recurso no encontrado
+        "500":
+          description: Error al actualizar el contacto de respaldo
+    delete:
+      summary: Eliminar un contacto de respaldo existente
+      tags:
+        - Contactos de Respaldo
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Contacto de respaldo eliminado exitosamente
+        "404":
+          description: Recurso no encontrado
+        "500":
+          description: Error al eliminar el contacto de respaldo
+
+components:
+  schemas:
+    ClientBackupContactResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        customer_id:
+          type: integer
+        phone:
+          type: string
+        email:
+          type: string
+        firstname:
+          type: string
+        lastname:
+          type: string
+        kind:
+          type: string
+        fullname:
+          type: string
+    ClientBackupContactCollection:
+      type: array
+      items:
+        $ref: "#/components/schemas/ClientBackupContactResource"
+    StoreClientBackupContactRequest:
+      type: object
+      properties:
+        customer_id:
+          type: integer
+        phone:
+          type: string
+        email:
+          type: string
+        firstname:
+          type: string
+        lastname:
+          type: string
+        kind:
+          type: string
+      required:
+        - customer_id
+        - phone
+        - firstname
+        - lastname
+        - kind
+    UpdateClientBackupContactRequest:
+      type: object
+      properties:
+        customer_id:
+          type: integer
+        phone:
+          type: string
+        email:
+          type: string
+        firstname:
+          type: string
+        lastname:
+          type: string
+        kind:
+          type: string

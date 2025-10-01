@@ -1,0 +1,189 @@
+openapi: 3.0.3
+paths:
+  /api/additional-payments:
+    get:
+      summary: Listar todos los pagos adicionales
+      tags:
+        - Pagos Adicionales
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de pagos adicionales
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdditionalPaymentCollection"
+        "401":
+          description: Error de autorización
+    post:
+      summary: Crear un nuevo pago adicional
+      tags:
+        - Pagos Adicionales
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreAdditionalPaymentRequest"
+      responses:
+        "201":
+          description: Pago adicional creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdditionalPaymentResource"
+        "401":
+          description: Error de autorización
+        "404":
+          description: Recurso no encontrado
+  /api/additional-payments/{id}:
+    get:
+      summary: Obtener un pago adicional por ID
+      tags:
+        - Pagos Adicionales
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Pago adicional encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdditionalPaymentResource"
+        "404":
+          description: Recurso no encontrado
+        "500":
+          description: Error al obtener el pago adicional
+    patch:
+      summary: Actualizar un pago adicional existente
+      tags:
+        - Pagos Adicionales
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAdditionalPaymentRequest"
+      responses:
+        "200":
+          description: Pago adicional actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdditionalPaymentResource"
+        "404":
+          description: Recurso no encontrado
+        "500":
+          description: Error al actualizar el pago adicional
+    delete:
+      summary: Cancelar un pago adicional existente
+      tags:
+        - Pagos Adicionales
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Pago adicional cancelado exitosamente
+        "404":
+          description: Recurso no encontrado
+        "500":
+          description: Error al cancelar el pago adicional
+
+components:
+  schemas:
+    AdditionalPaymentResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        name:
+          type: string
+        address:
+          type: string
+        concept:
+          type: string
+        notes:
+          type: string
+        subtotal:
+          type: number
+        vat:
+          type: number
+        total:
+          type: number
+        payment_folio:
+          type: string
+        payment_type_id:
+          type: integer
+        payment_type_name:
+          type: string
+        discount:
+          type: number
+        total_text:
+          type: string
+        canceled:
+          type: boolean
+        note:
+          type: string
+    AdditionalPaymentCollection:
+      type: array
+      items:
+        $ref: "#/components/schemas/AdditionalPaymentResource"
+    StoreAdditionalPaymentRequest:
+      type: object
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        address:
+          type: string
+        concept:
+          type: string
+        notes:
+          type: string
+        subtotal:
+          type: number
+        vat:
+          type: number
+        payment_type_id:
+          type: integer
+      required:
+        - name
+        - concept
+        - subtotal
+        - vat
+        - payment_type_id
+    UpdateAdditionalPaymentRequest:
+      type: object
+      properties:
+        payment_type_id:
+          type: integer
+        notes:
+          type: string
+      required:
+        - payment_type_id

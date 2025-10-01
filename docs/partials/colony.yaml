@@ -1,0 +1,117 @@
+openapi: 3.0.3
+paths:
+  /api/colonies:
+    get:
+      summary: Listar todas las colonias
+      tags:
+        - Colonias
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de colonias
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ColonyCollection"
+
+    post:
+      summary: Crear una nueva colonia
+      tags:
+        - Colonias
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreColonyRequest"
+      responses:
+        "201":
+          description: Colonia creada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ColonyResource"
+        "401":
+          description: Error de autorización
+
+  /api/colonies/{id}:
+    put:
+      summary: Actualizar una colonia existente
+      tags:
+        - Colonias
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateColonyRequest"
+      responses:
+        "200":
+          description: Colonia actualizada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ColonyResource"
+        "404":
+          description: Recurso no encontrado
+        "401":
+          description: Error de autorización
+
+    delete:
+      summary: Eliminar una colonia
+      tags:
+        - Colonias
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Colonia eliminada exitosamente
+        "404":
+          description: Recurso no encontrado
+        "401":
+          description: Error de autorización
+
+components:
+  schemas:
+    ColonyResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    ColonyCollection:
+      type: array
+      items:
+        $ref: "#/components/schemas/ColonyResource"
+    StoreColonyRequest:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+        - name
+    UpdateColonyRequest:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+        - name

@@ -1,0 +1,157 @@
+openapi: 3.0.3
+paths:
+  /api/committees:
+    get:
+      summary: Listar todos los comités
+      tags:
+        - Comités
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de comités
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommitteeCollection"
+        "401":
+          description: Error de autorización
+    post:
+      summary: Crear un nuevo comité
+      tags:
+        - Comités
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreCommitteeRequest"
+      responses:
+        "201":
+          description: Comité creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommitteeResource"
+        "401":
+          description: Error de autorización
+        "404":
+          description: Recurso no encontrado
+  /api/committees/{id}:
+    get:
+      summary: Obtener un comité por ID
+      tags:
+        - Comités
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Comité encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommitteeResource"
+        "404":
+          description: Recurso no encontrado
+        "500":
+          description: Error al obtener el comité
+    patch:
+      summary: Actualizar un comité existente
+      tags:
+        - Comités
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCommitteeRequest"
+      responses:
+        "200":
+          description: Comité actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommitteeResource"
+        "404":
+          description: Recurso no encontrado
+        "500":
+          description: Error al actualizar el comité
+    delete:
+      summary: Eliminar un comité existente
+      tags:
+        - Comités
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Comité eliminado exitosamente
+        "404":
+          description: Recurso no encontrado
+        "500":
+          description: Error al eliminar el comité
+
+components:
+  schemas:
+    CommitteeResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        name:
+          type: string
+        notes:
+          type: string
+    CommitteeCollection:
+      type: array
+      items:
+        $ref: "#/components/schemas/CommitteeResource"
+    StoreCommitteeRequest:
+      type: object
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        notes:
+          type: string
+      required:
+        - code
+        - name
+        - notes
+    UpdateCommitteeRequest:
+      type: object
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        notes:
+          type: string
+      required:
+        - code
+        - name
+        - notes

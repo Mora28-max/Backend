@@ -1,0 +1,17 @@
+openapi: 3.0.3
+info:
+  title: API Laravel Water Utility
+  description: API para el sistema de utilidad de agua
+  version: 1.0.0
+servers:
+  - url: https://api-v1.soapamz.xyz/public
+    description: Producción
+  - url: http://localhost:8000
+    description: Desarrollo
+paths: {}
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Opaque

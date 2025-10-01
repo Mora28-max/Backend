@@ -1,0 +1,206 @@
+openapi: 3.0.3
+paths:
+  /api/monthly-service-charges:
+    get:
+      summary: Listar todos los cargos mensuales
+      tags:
+        - Cargos Mensuales del Servicio
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de cargos mensuales
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MonthlyServiceChargeCollection"
+        "401":
+          description: Error de autorización
+    post:
+      summary: Crear un nuevo cargo mensual
+      tags:
+        - Cargos Mensuales del Servicio
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreMonthlyServiceChargeRequest"
+      responses:
+        "201":
+          description: Cargo mensual creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MonthlyServiceChargeResource"
+        "401":
+          description: Error de autorización
+        "404":
+          description: Recurso no encontrado
+  /api/monthly-service-charges/{customer_id}:
+    get:
+      summary: Obtener cargos mensuales por cliente
+      tags:
+        - Cargos Mensuales del Servicio
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: customer_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Cargos mensuales encontrados
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MonthlyServiceChargeCollection"
+        "404":
+          description: Cliente no encontrado
+        "401":
+          description: Error de autorización
+    patch:
+      summary: Actualizar cargos mensuales de un cliente
+      tags:
+        - Cargos Mensuales del Servicio
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: customer_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateMonthlyServiceChargeRequest"
+      responses:
+        "200":
+          description: Cargos mensuales actualizados exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MonthlyServiceChargeCollection"
+        "404":
+          description: Cliente no encontrado
+        "401":
+          description: Error de autorización
+  /api/monthly-service-charges/{customer_id}/forgiveness:
+    get:
+      summary: Obtener cargos condonados por cliente
+      tags:
+        - Cargos Mensuales del Servicio
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: customer
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Cargos condonados encontrados
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MonthlyServiceChargeCollection"
+        "404":
+          description: Cliente no encontrado
+        "401":
+          description: Error de autorización
+  /api/filter-msc:
+    post:
+      summary: Filtrar cargos mensuales
+      tags:
+        - Cargos Mensuales del Servicio
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Cargos mensuales filtrados
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MonthlyServiceChargeCollection"
+        "401":
+          description: Error de autorización
+
+components:
+  schemas:
+    MonthlyServiceChargeResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        customer_id:
+          type: integer
+        has_drainage:
+          type: boolean
+        year:
+          type: integer
+        month:
+          type: integer
+        water_amount:
+          type: number
+        drainage_amount:
+          type: number
+        overdue_months:
+          type: integer
+        water_surcharge:
+          type: number
+        drainage_surcharge:
+          type: number
+        water_discount:
+          type: number
+        drainage_discount:
+          type: number
+        water_amount_subtotal:
+          type: number
+        drainage_amount_subtotal:
+          type: number
+        vat:
+          type: number
+        total_amount:
+          type: number
+        folio:
+          type: string
+        monthly_payment_statement_id:
+          type: integer
+    MonthlyServiceChargeCollection:
+      type: array
+      items:
+        $ref: "#/components/schemas/MonthlyServiceChargeResource"
+    StoreMonthlyServiceChargeRequest:
+      type: object
+      properties:
+        customer_id:
+          type: integer
+      required:
+        - customer_id
+    UpdateMonthlyServiceChargeRequest:
+      type: object
+      properties:
+        operation_name:
+          type: string
+        percentage_discount:
+          type: number
+        months_to_be_updated:
+          type: array
+          items:
+            type: integer
+      required:
+        - operation_name

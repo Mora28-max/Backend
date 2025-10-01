@@ -1,0 +1,286 @@
+openapi: 3.0.3
+paths:
+  /api/customers:
+    get:
+      summary: Listar todos los clientes
+      tags:
+        - Clientes
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de clientes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerCollection"
+        "401":
+          description: Error de autorización
+    post:
+      summary: Crear un nuevo cliente
+      tags:
+        - Clientes
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreCustomerRequest"
+      responses:
+        "201":
+          description: Usuario creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerResource"
+        "401":
+          description: Error de autorización
+        "404":
+          description: Recurso no encontrado
+  /api/customers/{id}:
+    get:
+      summary: Obtener un cliente por ID
+      tags:
+        - Clientes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Usuario encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerResource"
+        "404":
+          description: Recurso no encontrado
+        "500":
+          description: Error al obtener el cliente
+    patch:
+      summary: Actualizar un cliente existente
+      tags:
+        - Clientes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCustomerRequest"
+      responses:
+        "200":
+          description: Usuario actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CustomerResource"
+        "404":
+          description: Recurso no encontrado
+        "500":
+          description: Error al actualizar el cliente
+      delete:
+        summary: Eliminar un cliente existente
+        tags:
+          - Clientes
+        security:
+          - bearerAuth: []
+        parameters:
+          - name: id
+            in: path
+            required: true
+            schema:
+              type: integer
+        responses:
+          "204":
+            description: Usuario cancelado exitosamente
+          "404":
+            description: Recurso no encontrado
+          "500":
+            description: Error al eliminar el cliente
+
+components:
+  schemas:
+    CustomerResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        rfc:
+          type: string
+        voter_key:
+          type: string
+        type_person:
+          type: string
+        address:
+          type: string
+        int_num:
+          type: string
+        ext_num:
+          type: string
+        geolocation:
+          type: string
+        reference:
+          type: string
+        url_image:
+          type: string
+        drainage_use:
+          type: boolean
+        additional_observation:
+          type: string
+        storage_capacity:
+          type: string
+        zone:
+          type: object
+        customer_type:
+          type: object
+        use_of_type:
+          type: object
+        service_type:
+          type: object
+        service_status:
+          type: object
+        classification_type:
+          type: object
+        meter:
+          type: string
+
+    CustomerCollection:
+      type: array
+      items:
+        $ref: "#/components/schemas/CustomerResource"
+
+    StoreCustomerRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        rfc:
+          type: string
+        voter_key:
+          type: string
+        type_person:
+          type: string
+        address:
+          type: string
+        int_num:
+          type: string
+        ext_num:
+          type: string
+        zone_id:
+          type: integer
+        geolocation:
+          type: string
+        reference:
+          type: string
+        image:
+          type: string
+          format: binary
+        customer_type_id:
+          type: integer
+        use_of_type_id:
+          type: integer
+        classification_type_id:
+          type: integer
+        drainage_use:
+          type: boolean
+        additional_observation_id:
+          type: integer
+        meter:
+          type: string
+        storage_capacity:
+          type: string
+      required:
+        - first_name
+        - voter_key
+        - type_person
+        - address
+        - zone_id
+        - reference
+        - customer_type_id
+        - use_of_type_id
+        - classification_type_id
+        - drainage_use
+        - meter
+
+    UpdateCustomerRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        rfc:
+          type: string
+        voter_key:
+          type: string
+        type_person:
+          type: string
+        address:
+          type: string
+        int_num:
+          type: string
+        ext_num:
+          type: string
+        zone_id:
+          type: integer
+        geolocation:
+          type: string
+        reference:
+          type: string
+        image:
+          type: string
+          format: binary
+        customer_type_id:
+          type: integer
+        use_of_type_id:
+          type: integer
+        classification_type_id:
+          type: integer
+        drainage_use:
+          type: boolean
+        additional_observation_id:
+          type: integer
+        meter:
+          type: string
+        storage_capacity:
+          type: string
+
+    DeleteCustomerRequest:
+      type: object
+      properties:
+        password_confirmation:
+          type: string
+      required:
+        - password_confirmation

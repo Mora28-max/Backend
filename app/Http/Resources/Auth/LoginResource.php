@@ -1,0 +1,33 @@
+<?php
+
+namespace App\Http\Resources\Auth;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class LoginResource extends JsonResource
+{
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'firstname' => $this->firstname,
+            'lastname' => $this->lastname,
+            'phone' => $this->phone,
+            'email' => $this->email,
+            'active' => $this->active,
+            'roles' => $this->roles->map(function ($role) {
+                return [
+                    'id' => $role->id,
+                    'name' => $role->name,
+                ];
+            })->first(),
+            'token' => $this->token,
+        ];
+    }
+}

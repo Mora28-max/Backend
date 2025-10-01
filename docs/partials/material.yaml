@@ -1,0 +1,134 @@
+openapi: 3.0.3
+paths:
+  /api/materials:
+    get:
+      summary: Buscar materiales por nombre
+      tags:
+        - Materiales
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: search
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 5
+      responses:
+        "200":
+          description: Lista de materiales encontrados
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MaterialCollection"
+        "400":
+          description: Error en la búsqueda
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "401":
+          description: No autorizado
+    post:
+      summary: Crear un nuevo material
+      tags:
+        - Materiales
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreMaterialRequest"
+      responses:
+        "201":
+          description: Material creado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  material:
+                    $ref: "#/components/schemas/MaterialResource"
+        "500":
+          description: Error al crear el material
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  error:
+                    type: string
+        "401":
+          description: No autorizado
+  /api/materials/{id}:
+    delete:
+      summary: Eliminar un material
+      tags:
+        - Materiales
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Material eliminado correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "500":
+          description: Error al eliminar el material
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  error:
+                    type: string
+        "401":
+          description: No autorizado
+
+components:
+  schemas:
+    MaterialResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    MaterialCollection:
+      type: array
+      items:
+        $ref: "#/components/schemas/MaterialResource"
+    StoreMaterialRequest:
+      type: object
+      properties:
+        name:
+          type: string

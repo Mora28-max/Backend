@@ -1,0 +1,241 @@
+openapi: 3.0.3
+paths:
+  /api/notices:
+    get:
+      summary: Listar todas las notificaciones
+      tags:
+        - Notificaciones
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de notificaciones
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoticeCollection"
+        "401":
+          description: Error de autorización
+    post:
+      summary: Crear una nueva notificación
+      tags:
+        - Notificaciones
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StoreNoticeRequest"
+      responses:
+        "201":
+          description: Notificación creada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoticeResource"
+        "401":
+          description: Error de autorización
+        "404":
+          description: Recurso no encontrado
+  /api/notices/{id}:
+    get:
+      summary: Obtener una notificación por ID
+      tags:
+        - Notificaciones
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Notificación encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoticeResource"
+        "404":
+          description: Recurso no encontrado
+        "500":
+          description: Error al obtener la notificación
+    patch:
+      summary: Actualizar una notificación existente
+      tags:
+        - Notificaciones
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateNoticeRequest"
+      responses:
+        "200":
+          description: Notificación actualizada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoticeResource"
+        "404":
+          description: Recurso no encontrado
+        "500":
+          description: Error al actualizar la notificación
+    delete:
+      summary: Eliminar una notificación existente
+      tags:
+        - Notificaciones
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Notificación eliminada exitosamente
+        "404":
+          description: Recurso no encontrado
+        "500":
+          description: Error al eliminar la notificación
+    post:
+      summary: Generar reporte por incumplimiento
+      tags:
+        - Notificaciones
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotComplianceNoticeRequest"
+      responses:
+        "200":
+          description: Reporte generado por incumplimiento
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "401":
+          description: No autorizado
+        "404":
+          description: Notificación no encontrada
+
+components:
+  schemas:
+    NoticeResource:
+      type: object
+      properties:
+        id:
+          type: integer
+        customer_id:
+          type: integer
+        customer_name:
+          type: string
+        tracking_folio:
+          type: string
+        months_behind:
+          type: integer
+        amount:
+          type: number
+        period:
+          type: string
+        process_status:
+          type: object
+        notice_type:
+          type: object
+        comment:
+          type: string
+        evidence:
+          type: string
+        cost:
+          type: number
+        user_id:
+          type: integer
+        user_name:
+          type: string
+        notification_date:
+          type: string
+        period_ended:
+          type: boolean
+    NoticeCollection:
+      type: array
+      items:
+        $ref: "#/components/schemas/NoticeResource"
+    StoreNoticeRequest:
+      type: object
+      properties:
+        customer_id:
+          type: integer
+        tracking_folio:
+          type: string
+        months_behind:
+          type: integer
+        amount:
+          type: number
+        process_status_id:
+          type: integer
+        notice_type_id:
+          type: integer
+        comment:
+          type: string
+        evidence:
+          type: string
+        cost:
+          type: number
+      required:
+        - customer_id
+        - tracking_folio
+        - months_behind
+        - amount
+        - process_status_id
+        - notice_type_id
+        - comment
+        - cost
+    UpdateNoticeRequest:
+      type: object
+      properties:
+        process_status_id:
+          type: integer
+        notice_type_id:
+          type: integer
+        comment:
+          type: string
+        evidence:
+          type: string
+      required:
+        - process_status_id
+        - notice_type_id
+        - comment
+        - evidence
+    NotComplianceNoticeRequest:
+      type: object
+      properties:
+        notice_classif:
+          type: integer
+          description: Tipo de notificación (1 o 2)
+      required:
+        - notice_classif
