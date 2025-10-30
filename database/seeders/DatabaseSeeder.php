@@ -40,5 +40,15 @@ class DatabaseSeeder extends Seeder
         $this->call(CommitteesSeeder::class);
         $this->call(AdditionalObservationsSeeder::class);
         $this->call(NoticeTypeSeeder::class);
+        $this->call(ProvidersTableSeeder::class);
+        $this->call(PersonTypesTableSeeder::class); // Tipos de persona (para select)
+        $this->call(StatusesTableSeeder::class);    // Estados de proveedor (para select)
+        $this->call(InventoryMaterialsTableSeeder::class);
+        $this->call(GoodsStatusSeeder::class);    // NUEVO: Estados de bienes
+        $this->call(CategorySeeder::class);       // NUEVO: Categorías de bienes
+        $this->call(GoodsSeeder::class);  
+        $this->call(MaintenanceHistorySeeder::class);
+        $this->call(TypeMaintenanceSeeder::class);
+    
     }
 }

@@ -146,15 +146,15 @@ class UserSeeder extends Seeder
         ];
 
         foreach ($users as $data) {
-            $user = User::create([
-                'firstname' => $data['firstname'],
-                'lastname' => $data['lastname'],
-                'email' => $data['email'],
-                'phone' => $data['phone'],
-                'password' => $data['password'],
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]);
+            $user = User::updateOrCreate(
+                ['email' => $data['email']],
+                [
+                    'firstname' => $data['firstname'],
+                    'lastname' => $data['lastname'],
+                    'phone' => $data['phone'],
+                    'password' => $data['password'],
+                ]
+            );
 
             $user->assignRole($data['role']);
         }

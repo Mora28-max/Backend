@@ -33,6 +33,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     include __DIR__ . '/api/noticeRouter.php';
     include __DIR__ . '/api/agreementRouter.php';
     include __DIR__ . '/api/pdfRouter.php';
+    include __DIR__ . '/api/inventoryRouter.php';
+    include __DIR__ . '/api/maintenance.php';
 });
 
 //Authentication Routes
