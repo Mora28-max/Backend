@@ -19,7 +19,13 @@ return new class extends Migration
             $table->unsignedBigInteger('id_status'); // FK a goods_status
             $table->integer('stock')->default(0);
             $table->unsignedBigInteger('id_category'); // FK a categories
-            $table->string('url_evidence')->nullable();
+            
+            $table->string('url_evidence')->nullable();       // Evidencia opcional
+            $table->string('public_id_evidence')->nullable(); // <-- NUEVO
+            
+            $table->string('url_invoice')->nullable();        // Factura opcional
+            $table->string('public_id_invoice')->nullable();  // <-- NUEVO (opcional)
+
             $table->unsignedBigInteger('id_user'); // FK a users
             $table->unsignedBigInteger('id_provider'); // FK a providers
             $table->timestamps();

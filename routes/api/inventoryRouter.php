@@ -32,10 +32,15 @@ Route::prefix('inventory')->name('inventory.')->group(function () {
 
     // Inventory Materials
      Route::get('materials', [InventoryMaterialController::class, 'index']);
+    Route::get('materials/low-stock', [InventoryMaterialController::class, 'lowStock']); // ✅ Ruta para bajo stock
     Route::get('materials/{id}', [InventoryMaterialController::class, 'show']);
     Route::post('materials', [InventoryMaterialController::class, 'store']);
     Route::post('materials/{id}', [InventoryMaterialController::class, 'update']);
     Route::delete('materials/{id}', [InventoryMaterialController::class, 'destroy']);
+
+    // ⚠️ Nueva ruta para eliminar imagen de Cloudinary (solo la imagen, no el material)
+    Route::delete('materials/{id}/evidence', [InventoryMaterialController::class, 'deleteImage']);
+    Route::delete('materials/{id}/invoice', [InventoryMaterialController::class, 'deleteInvoice']);
 
      // Goods (bienes)
     Route::get('goods', [GoodsController::class, 'index']);          // Listar todos
@@ -43,6 +48,10 @@ Route::prefix('inventory')->name('inventory.')->group(function () {
     Route::get('goods/{id}', [GoodsController::class, 'show']);      // Mostrar uno
     Route::post('goods/{id}', [GoodsController::class, 'update']);    // Actualizar
     Route::delete('goods/{id}', [GoodsController::class, 'destroy']); // Eliminar
+
+    // ⚠️ Nueva ruta para eliminar solo la imagen de evidencia del bien
+Route::delete('goods/{id}/image', [GoodsController::class, 'deleteImage']);
+Route::delete('goods/{id}/invoice', [GoodsController::class, 'deleteInvoice']);
 
     // Unities (unidades)
     Route::apiResource('unities', UnitiesController::class);

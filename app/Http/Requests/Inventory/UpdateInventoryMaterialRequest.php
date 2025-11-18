@@ -24,12 +24,13 @@ class UpdateInventoryMaterialRequest extends FormRequest
         return [
             //
         'name' => 'sometimes|string|max:255',
-       
         'stock' => 'sometimes|integer',
+        'stock_min' => 'sometimes|integer|min:0',
         'description' => 'sometimes|string',
         'cost' => 'sometimes|numeric',
-        'url_evidence' => 'sometimes|nullable|url',
-        'provider_id' => 'sometimes|exists:providers,provider_id',
+        'url_evidence' => 'sometimes|nullable|file|mimes:jpeg,png,jpg,gif|max:2048',
+        'url_invoice' => 'sometimes|nullable|file|mimes:pdf,jpeg,png,jpg|max:4096',
+        'provider_id' => 'sometimes|exists:providers,id',
         'unit_type_id' => 'sometimes|exists:unities,id',
         ];
     }

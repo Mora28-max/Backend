@@ -25,6 +25,7 @@ class Goods extends Model
         'stock',
         'id_category',
         'url_evidence',
+        'url_invoice',
         'id_user',
         'id_provider'
     ];

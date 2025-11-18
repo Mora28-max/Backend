@@ -7,23 +7,42 @@ use Illuminate\Http\Request;
 use App\Models\Maintenance\MaintenanceHistory;
 use App\Http\Requests\Maintenance\StoreMaintenanceHistoryRequest;
 use App\Http\Requests\Maintenance\UpdateMaintenanceHistoryRequest;
+use App\Http\Resources\Maintenance\MaintenanceHistoryCollection;
+use App\Http\Resources\Maintenance\MaintenanceHistoryResource;
 
 class MaintenanceHistoryController extends Controller
 {
     /**
      * Listar todos los historiales
      */
-    public function index()
+    public function index(Request $request)
     {
-        $histories = MaintenanceHistory::with(['typeMaintenance', 'goods'])
-        ->orderBy('id', 'asc') // 👈 aquí el cambio
-        ->get();
+         $search = $request->input('search');
 
-    $data = $histories->map(function ($history) {
-        return $this->transformHistory($history);
-    });
+    // Cargar relaciones
+    $query = MaintenanceHistory::with(['typeMaintenance', 'goods', 'user']);
 
-    return response()->json(['data' => $data]);
+    // 🔍 Filtro de búsqueda
+    if ($search) {
+        $query->where(function ($q) use ($search) {
+            // Buscar por código del bien
+            $q->whereHas('goods', function ($sub) use ($search) {
+                $sub->where('code_goods', 'LIKE', "%{$search}%");
+            })
+            // O por tipo de mantenimiento
+            ->orWhereHas('typeMaintenance', function ($sub) use ($search) {
+                $sub->where('name', 'LIKE', "%{$search}%");
+            });
+        });
+    }
+
+    // Ordenar y paginar
+    $histories = $query
+        ->orderBy('id', 'asc')
+        ->paginate(25)
+        ->withQueryString();
+
+    return new MaintenanceHistoryCollection($histories);
     }
 
     /**

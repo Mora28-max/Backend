@@ -19,9 +19,11 @@ class InventoryMaterial extends Model
         'name',
         'code_materials',
         'stock',
+        'stock_min', // ✅ agregamos stock mínimo
         'description',
         'cost',
         'url_evidence',
+        'url_invoice',
         'provider_id',
         'unit_type_id',
         'id_user',
@@ -49,6 +51,15 @@ class InventoryMaterial extends Model
     {
         return $this->belongsTo(User::class, 'id_user', 'id');
     }
+
+      /**
+     * Scope: materiales con bajo stock
+     */
+    public function scopeLowStock($query)
+    {
+        return $query->whereColumn('stock', '<=', 'stock_min');
+    }
+
 
       /**
      * Genera automáticamente el código del material (MAT-001, MAT-002, etc.)

@@ -22,7 +22,7 @@ class UpdateGoodsRequest extends FormRequest
             'id_category' => 'sometimes|required|exists:categories,id',
             'provider_id' => 'sometimes|required|exists:providers,id', // se mapeará a id_provider en el controller
             'code_goods' => 'nullable|string|max:50',
-            'url_evidence' => 'nullable|string|max:255',
+            'url_evidence' => 'nullable|file|mimes:jpeg,png,jpg,gif|max:2048',
         ];
     }
 

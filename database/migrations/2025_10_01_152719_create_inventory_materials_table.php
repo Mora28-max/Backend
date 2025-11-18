@@ -15,13 +15,20 @@ return new class extends Migration
             $table->id(); 
             $table->string('name');         // PK autoincrement
             $table->string('code_materials');       // Código del material
-            $table->integer('stock');               // Cantidad en stock
+            $table->integer('stock'); 
+            $table->integer('stock_min')->default(0); // ← Aquí              // Cantidad en stock
             $table->text('description')->nullable(); // Descripción opcional
             $table->decimal('cost', 10, 2);         // Costo con 2 decimales
-            $table->string('url_evidence')->nullable(); // Evidencia opcional
+             
+            $table->string('url_evidence')->nullable();       // Evidencia opcional
+            $table->string('public_id_evidence')->nullable(); // <-- NUEVO
+            
+            $table->string('url_invoice')->nullable();        // Factura opcional
+            $table->string('public_id_invoice')->nullable();  // <-- NUEVO (opcional)
+            
             $table->unsignedBigInteger('provider_id');   // FK a providers
             $table->unsignedBigInteger('unit_type_id');  // FK a unit_types
-             $table->unsignedBigInteger('id_user');
+            $table->unsignedBigInteger('id_user');
             $table->timestamps();
 
             // Relaciones

@@ -1,160 +1,134 @@
 <?php
-
 namespace App\Helpers;
 
 use Cloudinary\Cloudinary;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 
 class UploadDataToCloudinary
 {
-    public static function uploadImage(string $id, UploadedFile $image, string $folder): string
+    protected static function cloudinary(): Cloudinary
+    {
+        return new Cloudinary(config('services.cloudinary'));
+    }
+
+    // Subir imagen, devuelve ['public_id', 'secure_url']
+    public static function uploadImage(string $id, UploadedFile $image, string $folder): array
     {
         try {
-            $cloudinary = new Cloudinary($_ENV['CLOUDINARY_URL']);
-            $config = [
+            $cloudinary = self::cloudinary();
+
+            $result = $cloudinary->uploadApi()->upload($image->getRealPath(), [
                 'folder' => $folder,
                 'public_id' => 'soapamz-' . $id,
                 'overwrite' => true,
                 'resource_type' => 'image',
-                'type' => 'authenticated',
+                'type' => 'upload',
                 'transformation' => [
                     [
-                        'width' => 800,
-                        'height' => 800,
-                        'crop' => 'crop',
-                        'gravity' => 'center',
-                        'quality' => 'auto:low',
-                        'fetch_format' => 'auto'
+                        'width' => 800, 'height' => 800, 'crop' => 'crop',
+                        'gravity' => 'center', 'quality' => 'auto:low', 'fetch_format' => 'auto'
                     ]
                 ]
+            ]);
+
+            return [
+                'public_id' => $result['public_id'] ?? null,
+                'secure_url' => $result['secure_url'] ?? null,
             ];
-            $result = $cloudinary->uploadApi()->upload($image->getRealPath(), $config);
-            return $result['public_id'];
-        } catch (\Throwable $th) {
-            throw new \Exception('Error al subir la imagen: ' . $th->getMessage());
+        } catch (\Throwable $e) {
+            Log::error('Error subir imagen Cloudinary: ' . $e->getMessage());
+            throw $e;
         }
     }
 
-    public static function uploadVideo(string $id, UploadedFile $video, string $folder): string
+    // Subir documento/factura, devuelve ['public_id','secure_url']
+    public static function uploadDocument(string $id, UploadedFile $document, string $folder): array
     {
         try {
-            $cloudinary = new Cloudinary($_ENV['CLOUDINARY_URL']);
-            $config = [
-                'folder' => $folder,
-                'public_id' => 'soapamz-' . $id,
-                'overwrite' => true,
-                'resource_type' => 'video',
-                'type' => 'authenticated',
-                'transformation' => [
-                    [
-                        'width' => 800,
-                        'height' => 800,
-                        'crop' => 'limit',
-                        'quality' => 'auto:low',
-                        'fetch_format' => 'auto'
-                    ]
-                ]
-            ];
-            $result = $cloudinary->uploadApi()->upload($video->getRealPath(), $config);
-            return $result['public_id'];
-        } catch (\Throwable $th) {
-            throw new \Exception('Error al subir el video: ' . $th->getMessage());
-        }
-    }
+            $cloudinary = self::cloudinary();
 
-    public static function uploadDocument(string $id, UploadedFile $document, string $folder): string
-    {
-        try {
-            $cloudinary = new Cloudinary($_ENV['CLOUDINARY_URL']);
-            $config = [
+            $result = $cloudinary->uploadApi()->upload($document->getRealPath(), [
                 'folder' => $folder,
                 'public_id' => 'soapamz-' . $id,
                 'overwrite' => true,
                 'resource_type' => 'auto',
                 'type' => 'authenticated',
+            ]);
+
+            return [
+                'public_id' => $result['public_id'] ?? null,
+                'secure_url' => $result['secure_url'] ?? null,
             ];
-            $result = $cloudinary->uploadApi()->upload($document->getRealPath(), $config);
-            return $result['public_id'];
-        } catch (\Throwable $th) {
-            throw new \Exception('Error al subir el documento: ' . $th->getMessage());
+        } catch (\Throwable $e) {
+            Log::error('Error subir documento Cloudinary: ' . $e->getMessage());
+            throw $e;
         }
     }
 
-    public static function removeFile(string $publicId, string $resourceType = 'auto'): bool
+    // Eliminar archivo por public_id o URL
+    public static function removeFile(string $urlOrPublicId): bool
     {
         try {
-            $cloudinary = new Cloudinary([
-                'cloud' => [
-                    'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
-                    'api_key'    => env('CLOUDINARY_API_KEY'),
-                    'api_secret' => env('CLOUDINARY_API_SECRET'),
-                ]
-            ]);
+            $cloudinary = self::cloudinary();
+
+            $publicId = self::looksLikeUrl($urlOrPublicId)
+                ? self::getPublicIdFromUrl($urlOrPublicId)
+                : $urlOrPublicId;
+
+            // Detectar resource_type y type basado en el public_id
+            if (strpos($publicId, 'invoices') !== false) {
+                $resourceType = 'raw';
+                $type = 'authenticated';
+            } elseif (strpos($publicId, 'evidence') !== false) {
+                $resourceType = 'image';
+                $type = 'upload';
+            } else {
+                $resourceType = 'auto';
+                $type = 'upload';
+            }
 
             $result = $cloudinary->uploadApi()->destroy($publicId, [
                 'resource_type' => $resourceType,
-                'type' => 'authenticated',
+                'type' => $type,
             ]);
 
-            $succes = $result['result'] === 'ok';
-            return $succes;
+            Log::info('Cloudinary destroy', [
+                'public_id' => $publicId,
+                'resource_type' => $resourceType,
+                'type' => $type,
+                'result' => $result,
+            ]);
+
+            return isset($result['result']) && in_array($result['result'], ['ok', 'not_found']);
         } catch (\Throwable $e) {
+            Log::error('Error eliminar Cloudinary: ' . $e->getMessage());
             return false;
         }
     }
 
-
-    public static function getSignedAuthenticatedUrl(string $publicId, string $resourceType = 'auto', ?string $format = null): ?string
+    private static function looksLikeUrl($string): bool
     {
-
-        $cloudinary = new Cloudinary([
-            'cloud' => [
-                'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
-                'api_key'    => env('CLOUDINARY_API_KEY'),
-                'api_secret' => env('CLOUDINARY_API_SECRET'),
-            ],
-            'url' => [
-                'secure' => true,
-                'sign_url' => true,
-            ],
-        ]);
-
-        $cleanPublicId = preg_replace('#\\\\/#', '/', $publicId);
-        $expiresAt = time() + 3600;
-
-        return $cloudinary->uploadApi()->privateDownloadUrl(
-            $cleanPublicId,
-            $format ?? 'jpg',
-            [
-                'resource_type' => $resourceType,
-                'type' => 'authenticated',
-                'expires_at' => $expiresAt,
-            ]
-        );
+        return (bool) filter_var($string, FILTER_VALIDATE_URL);
     }
 
-    public static function getFirstPublicImageUrlByPrefix(string $folder, string $partialName, string $format = 'jpg'): ?string
+    // Extrae public_id robusto desde URL de Cloudinary
+    public static function getPublicIdFromUrl($url)
     {
-        $cloudName = env('CLOUDINARY_CLOUD_NAME');
+        if (!$url) return null;
 
-        $cloudinary = new Cloudinary([
-            'cloud' => [
-                'cloud_name' => $cloudName,
-                'api_key'    => env('CLOUDINARY_API_KEY'),
-                'api_secret' => env('CLOUDINARY_API_SECRET'),
-            ]
-        ]);
+        $url = preg_replace('/\?.*/', '', $url);
+        $path = parse_url($url, PHP_URL_PATH);
+        if (!$path) return null;
 
-        $result = $cloudinary->searchApi()
-            ->expression("folder:{$folder} AND public_id:{$partialName}*")
-            ->maxResults(1)
-            ->execute();
-
-        if (!empty($result['resources'])) {
-            $publicId = $result['resources'][0]['public_id'];
-            return "https://res.cloudinary.com/{$cloudName}/image/upload/{$publicId}.{$format}";
+        if (strpos($url, 'authenticated') !== false) {
+            $path = preg_replace('#^/(?:image|raw)/authenticated(?:/s--[A-Za-z0-9_-]+--)?/v\d+/?#', '', $path);
+            $path = preg_replace('/\.[^.]+$/', '', $path);
+        } else {
+            $path = preg_replace('#^/(?:image|raw)/upload/v\d+/?#', '', $path);
+            $path = preg_replace('/\.[^.]+$/', '', $path);
         }
 
-        return null;
+        return trim($path, '/');
     }
 }

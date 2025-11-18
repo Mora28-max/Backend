@@ -17,6 +17,8 @@ class GoodsSeeder extends Seeder
                 'id_status' => 5, // Nuevo
                 'stock' => 10,
                 'id_category' => 1,
+                'url_evidence' => null,
+                'url_invoice' => null,  // 📄 Factura o comprobante
                 'id_user' => 1,
                 'id_provider' => 1,
             ],
@@ -27,6 +29,8 @@ class GoodsSeeder extends Seeder
                 'id_status' => 4, // Bueno
                 'stock' => 5,
                 'id_category' => 2,
+                'url_evidence' => null,
+                'url_invoice' => null,  // 📄 Factura o comprobante
                 'id_user' => 2,
                 'id_provider' => 1,
             ],

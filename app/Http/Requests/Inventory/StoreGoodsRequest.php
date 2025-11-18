@@ -22,7 +22,7 @@ class StoreGoodsRequest extends FormRequest
             'id_category' => 'required|exists:categories,id',
             'provider_id' => 'required|exists:providers,id', // del request, luego se mapeará a id_provider
             'code_goods' => 'nullable|string|max:50',
-            'url_evidence' => 'nullable|string|max:255',
+            'url_evidence' => 'nullable|file|mimes:jpeg,png,jpg,gif|max:2048',
         ];
     }
 
