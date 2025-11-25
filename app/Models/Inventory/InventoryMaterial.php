@@ -40,7 +40,7 @@ class InventoryMaterial extends Model
     /**
      * Relación con la unidad de medida
      */
-    public function unity()
+    public function unit()
     {
         return $this->belongsTo(Unities::class, 'unit_type_id', 'id');
     }

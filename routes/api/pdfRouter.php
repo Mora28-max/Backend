@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PDF\ReportController;
 use App\Http\Controllers\PDF\ReceiptController;
 use App\Http\Controllers\PDF\CashRegisterController;
+use App\Http\Controllers\Order\PurchaseOrderController;
+
 
 Route::get('/pdf/user-agreement/{id}', [ReceiptController::class, 'userAgreement']);
 Route::get('/pdf/receipt/{id}', [ReceiptController::class, 'getPaymentReceipt']);
@@ -13,3 +15,5 @@ Route::get('/pdf/water-receipt/{id}', [ReceiptController::class, 'waterReceipt']
 Route::get('/pdf/report/{id}', [ReportController::class, 'getReport']);
 Route::get('/pdf/cash-register-audit/{id}', [CashRegisterController::class, 'downloadAuditReport']);
 Route::get('/pdf/notice/{id}', [ReceiptController::class, 'getNotice']);
+Route::get('/pdf/purchase-order/{id}', [PurchaseOrderController::class, 'pdf']);
+

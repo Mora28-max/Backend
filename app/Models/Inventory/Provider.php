@@ -27,11 +27,12 @@ class Provider extends Model
         'url_evidence',
         'id_type',
         'code_provider', // ✅ código secuencial
+        'public_id_evidence',
     ];
 
     // 👇 Esto le dice a Laravel que el campo id_type es JSON
     protected $casts = [
-        'id_type' => 'array',
+        'id_type' => 'integer',
     ];
 
     /**

@@ -26,10 +26,10 @@ class InventoryMaterialResource extends JsonResource
                 'id' => $this->provider->id,
                 'name' => $this->provider->name,
             ] : null,
-            'unity' => $this->unity ? [
-                'id' => $this->unity->id,
-                'name' => $this->unity->name,
-                'abbreviation' => $this->unity->abbreviation,
+            'unit' => $this->unit ? [
+                'id' => $this->unit->id,
+                'name' => $this->unit->name,
+                'abbreviation' => $this->unit->abbreviation,
             ] : null,
         ];
     }

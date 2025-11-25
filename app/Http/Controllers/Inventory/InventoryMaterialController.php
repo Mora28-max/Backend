@@ -14,12 +14,14 @@ use App\Helpers\UploadDataToCloudinary;
 
 class InventoryMaterialController extends Controller
 {
-    // Mostrar todos los materiales con búsqueda
+    /**
+     * Mostrar todos los materiales.
+     */
     public function index(Request $request)
     {
         $search = $request->input('search');
 
-        $query = InventoryMaterial::with(['provider', 'unity']);
+        $query = InventoryMaterial::with(['provider', 'unit']);
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -33,18 +35,25 @@ class InventoryMaterialController extends Controller
         return new InventoryMaterialCollection($materials);
     }
 
-    // Materiales con stock bajo
-    public function lowStock()
+    /**
+     * Mostrar un material específico.
+     */
+    public function show($id)
     {
-        $materials = InventoryMaterial::with(['provider', 'unity'])
-            ->lowStock()
-            ->orderBy('stock', 'asc')
-            ->get();
+        $material = InventoryMaterial::with(['provider', 'unit'])->find($id);
 
-        return InventoryMaterialResource::collection($materials);
+        if (!$material) {
+            return response()->json(['message' => 'Material no encontrado'], 404);
+        }
+
+        return response()->json([
+            'data' => new InventoryMaterialResource($material)
+        ]);
     }
 
-    // Crear material
+    /**
+     * Crear un nuevo material.
+     */
     public function store(StoreInventoryMaterialRequest $request)
     {
         $validated = $request->validated();
@@ -52,60 +61,50 @@ class InventoryMaterialController extends Controller
 
         $material = InventoryMaterial::create($validated);
 
-        // Imagen evidencia
+        /** ---- IMAGEN ---- **/
         if ($request->hasFile('url_evidence')) {
+
             $result = UploadDataToCloudinary::uploadImage(
                 $material->id,
                 $request->file('url_evidence'),
                 'inventory-materials/evidence'
             );
+
             $material->url_evidence = $result['secure_url'];
             $material->public_id_evidence = $result['public_id'];
         }
 
-        // Factura / documento
+        /** ---- DOCUMENTO ---- **/
         if ($request->hasFile('url_invoice')) {
+
             $result = UploadDataToCloudinary::uploadDocument(
                 $material->id,
                 $request->file('url_invoice'),
                 'inventory-materials/invoices'
             );
+
             $material->url_invoice = $result['secure_url'];
             $material->public_id_invoice = $result['public_id'];
         }
 
         $material->save();
-        $material->load(['provider', 'unity']);
+        $material->load(['provider', 'unit']);
 
         return response()->json([
             'message' => 'Material creado correctamente',
-            'data' => new InventoryMaterialResource($material),
+            'data' => new InventoryMaterialResource($material)
         ], 201);
     }
 
-    // Mostrar un material
-    public function show($id)
-    {
-        $material = InventoryMaterial::with(['provider', 'unity'])->find($id);
-
-        if (!$material) {
-            return response()->json([
-                'message' => 'Material no encontrado',
-            ], 404);
-        }
-
-        return response()->json([
-            'data' => new InventoryMaterialResource($material),
-        ]);
-    }
-
-    // Actualizar material
+    /**
+     * Actualizar un material.
+     */
     public function update(UpdateInventoryMaterialRequest $request, $id)
     {
         $material = InventoryMaterial::findOrFail($id);
         $data = $request->validated();
 
-        // Actualizar imagen evidencia
+        /** ---- ACTUALIZAR IMAGEN ---- **/
         if ($request->hasFile('url_evidence')) {
 
             if ($material->public_id_evidence) {
@@ -117,11 +116,12 @@ class InventoryMaterialController extends Controller
                 $request->file('url_evidence'),
                 'inventory-materials/evidence'
             );
+
             $data['url_evidence'] = $result['secure_url'];
             $data['public_id_evidence'] = $result['public_id'];
         }
 
-        // Actualizar factura
+        /** ---- ACTUALIZAR DOCUMENTO ---- **/
         if ($request->hasFile('url_invoice')) {
 
             if ($material->public_id_invoice) {
@@ -133,94 +133,83 @@ class InventoryMaterialController extends Controller
                 $request->file('url_invoice'),
                 'inventory-materials/invoices'
             );
+
             $data['url_invoice'] = $result['secure_url'];
             $data['public_id_invoice'] = $result['public_id'];
         }
 
         $material->update($data);
-        $material->load(['provider', 'unity']);
+        $material->load(['provider', 'unit']);
 
         return response()->json([
             'message' => 'Material actualizado correctamente',
-            'data' => new InventoryMaterialResource($material),
+            'data' => new InventoryMaterialResource($material)
         ]);
     }
 
-    // Eliminar material completo
+    /**
+     * Eliminar un material.
+     */
     public function destroy(DeleteInventoryMaterialRequest $request, $id)
     {
         $material = InventoryMaterial::findOrFail($id);
 
+        /** ---- ELIMINAR IMAGEN ---- **/
         if ($material->public_id_evidence) {
             UploadDataToCloudinary::removeFile($material->public_id_evidence);
         }
 
+        /** ---- ELIMINAR DOCUMENTO ---- **/
         if ($material->public_id_invoice) {
             UploadDataToCloudinary::removeFile($material->public_id_invoice);
         }
 
         $material->delete();
 
-        return response()->json([
-            'message' => 'Material y archivos eliminados correctamente.'
-        ]);
+        return response()->json(['message' => 'Material eliminado correctamente']);
     }
 
-    // Eliminar solo imagen
+    /**
+     * Eliminar solo la imagen.
+     */
     public function deleteImage($id)
     {
-       
+        $material = InventoryMaterial::findOrFail($id);
 
-    $material = InventoryMaterial::findOrFail($id);
+        if (!$material->public_id_evidence) {
+            return response()->json(['message' => 'No hay imagen que eliminar'], 400);
+        }
 
-    if (!$material->public_id_evidence) {
-        return response()->json(['message' => 'No hay imagen que eliminar'], 400);
-    }
+        $deleted = UploadDataToCloudinary::removeFile($material->public_id_evidence);
 
-    // Usar el public_id guardado para eliminar en Cloudinary
-    $deleted = UploadDataToCloudinary::removeFile($material->public_id_evidence);
-
-    if ($deleted) {
         $material->update([
             'url_evidence' => null,
             'public_id_evidence' => null
         ]);
-        return response()->json(['message' => 'Imagen eliminada correctamente de Cloudinary y la BD']);
+
+        return response()->json(['message' => 'Imagen eliminada correctamente']);
     }
 
-    return response()->json(['message' => 'No se pudo eliminar la imagen en Cloudinary']);
-}
+    /**
+     * Eliminar solo la factura.
+     */
+    public function deleteInvoice($id)
+    {
+        $material = InventoryMaterial::findOrFail($id);
 
+        if (!$material->public_id_invoice) {
+            return response()->json(['message' => 'No hay factura que eliminar'], 400);
+        }
 
-    // Eliminar solo factura
-   public function deleteInvoice($id)
-{
-    $material = InventoryMaterial::findOrFail($id);
+        $deleted = UploadDataToCloudinary::removeFile($material->public_id_invoice);
 
-    if (!$material->public_id_invoice) {
-        return response()->json(['message' => 'No hay factura que eliminar'], 400);
+        $material->update([
+            'url_invoice' => null,
+            'public_id_invoice' => null
+        ]);
+
+        return response()->json(['message' => 'Factura eliminada correctamente']);
     }
-
-    // Usar el public_id guardado para eliminar en Cloudinary
-    $deleted = UploadDataToCloudinary::removeFile($material->public_id_invoice);
-
-    // Actualizar la base de datos siempre
-    $material->update([
-        'url_invoice' => null,
-        'public_id_invoice' => null
-    ]);
-
-    if ($deleted) {
-        return response()->json(['message' => 'Factura eliminada correctamente de Cloudinary y la BD']);
-    }
-
-    \Log::warning('No se pudo eliminar la factura en Cloudinary, pero se actualizó la BD', [
-        'material_id' => $id,
-        'public_id' => $material->public_id_invoice
-    ]);
-
-    return response()->json(['message' => 'Factura eliminada de la base de datos, pero pudo quedar en Cloudinary']);
-}
 
 
     /**
@@ -245,10 +234,10 @@ class InventoryMaterialController extends Controller
                 'id' => $material->provider->id,
                 'name' => $material->provider->name,
             ],
-            'unity' => [
-                'id' => $material->unity->id,
-                'name' => $material->unity->name,
-                'abbreviation' => $material->unity->abbreviation,
+            'unit' => [
+                'id' => $material->unit->id,
+                'name' => $material->unit->name,
+                'abbreviation' => $material->unit->abbreviation,
             ],
         ];
     }

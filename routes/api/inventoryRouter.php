@@ -9,6 +9,7 @@ use App\Http\Controllers\Inventory\GoodsStatusController;
 use App\Http\Controllers\Inventory\PersonTypeController;
 use App\Http\Controllers\Inventory\StatusController;
 use App\Http\Controllers\Catalogs\UnitiesController;
+use App\Http\Controllers\Order\PurchaseOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +29,9 @@ Route::prefix('inventory')->name('inventory.')->group(function () {
     Route::post('providers', [ProviderController::class, 'store']);       // Crear
     Route::post('providers/{id}', [ProviderController::class, 'update']); // Actualizar
     Route::delete('providers/{id}', [ProviderController::class, 'destroy']); // Eliminar
+
+     // ⚠️ Nueva ruta para eliminar imagen de Cloudinary (solo la imagen, no el material)
+ Route::delete('providers/{id}/evidence', [ProviderController::class, 'deleteEvidence']);
 
 
     // Inventory Materials
@@ -67,4 +71,6 @@ Route::delete('goods/{id}/invoice', [GoodsController::class, 'deleteInvoice']);
 
     // ✅ Statuses (estatus generales)
     Route::apiResource('statuses', StatusController::class);
+
+    Route::post('purchase-orders', [PurchaseOrderController::class, 'store']); // 👈 AQUÍ
 });

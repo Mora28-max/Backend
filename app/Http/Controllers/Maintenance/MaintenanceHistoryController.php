@@ -37,12 +37,12 @@ class MaintenanceHistoryController extends Controller
     }
 
     // Ordenar y paginar
-    $histories = $query
+    $history = $query
         ->orderBy('id', 'asc')
         ->paginate(25)
         ->withQueryString();
 
-    return new MaintenanceHistoryCollection($histories);
+    return new MaintenanceHistoryCollection($history);
     }
 
     /**

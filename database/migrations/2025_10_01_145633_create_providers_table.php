@@ -22,10 +22,11 @@
                 $table->unsignedBigInteger('id_user');          // FK a users
                 $table->unsignedBigInteger('person_type_id');   // FK a person_types
                 $table->unsignedBigInteger('status_id');        // FK a statuses
-                $table->string('url_evidence')->nullable();
+                $table->string('url_evidence')->nullable();       // Evidencia opcional
+                $table->string('public_id_evidence')->nullable(); // <-- NUEVO
 
                 // 👇 Campo JSON que guardará el tipo de proveedor
-                $table->json('id_type')->nullable();
+                $table->unsignedBigInteger('id_type')->nullable();
 
                 $table->timestamps(); // created_at y updated_at
 

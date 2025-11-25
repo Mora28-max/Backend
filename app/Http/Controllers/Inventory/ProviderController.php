@@ -5,28 +5,36 @@ namespace App\Http\Controllers\Inventory;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Inventory\Provider;
+use App\Models\Inventory\PersonType;
+use App\Models\Inventory\Status;
 use App\Http\Requests\Inventory\StoreProviderRequest;
 use App\Http\Requests\Inventory\UpdateProviderRequest;
+use App\Http\Resources\Provider\ProviderResource;
+use App\Http\Resources\Provider\ProviderCollection;
+use App\Helpers\UploadDataToCloudinary;
 
 class ProviderController extends Controller
 {
-    /**
-     * Listar todos los proveedores
-     */
-    public function index()
+    // Listar proveedores con Resource Collection
+    public function index(Request $request)
     {
-        $providers = Provider::with(['personType', 'status', 'user'])
-            ->orderBy('id', 'asc')
-            ->get();
+        $search = $request->input('search');
 
-        $data = $providers->map(fn($provider) => $this->transformProvider($provider));
+        $query = Provider::with(['personType', 'status', 'user'])->orderBy('id', 'asc');
 
-        return response()->json(['data' => $data]);
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                  ->orWhere('rfc', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $providers = $query->paginate(25)->withQueryString();
+
+        return new ProviderCollection($providers);
     }
 
-    /**
-     * Mostrar un proveedor específico
-     */
+    // Mostrar un proveedor
     public function show($id)
     {
         $provider = Provider::with(['personType', 'status', 'user'])->find($id);
@@ -34,80 +42,124 @@ class ProviderController extends Controller
         if (!$provider) {
             return response()->json([
                 'message' => 'Proveedor no encontrado',
-                'id_busqueda' => $id
             ], 404);
         }
 
-        return response()->json(['data' => $this->transformProvider($provider)]);
+        return new ProviderResource($provider);
     }
 
-    /**
-     * Crear un nuevo proveedor
-     */
+    // Crear proveedor
     public function store(StoreProviderRequest $request)
     {
         $validated = $request->validated();
 
-        $validated['id_user'] = auth()->id() ?? 1;
+        // Guardar usuario que creó el registro
+        $validated['user_id'] = auth()->id() ?? 1;
 
-        // 🔹 Generar código secuencial simple (1, 2, 3…)
-        $lastProvider = Provider::latest('id')->first();
-        $validated['code_provider'] = $lastProvider ? $lastProvider->id + 1 : 1;
+        // Código secuencial
+        $last = Provider::latest('id')->first();
+        $validated['code_provider'] = $last ? $last->id + 1 : 1;
 
-        // Etiquetas del tipo de proveedor
-       if (!in_array($validated['id_type'], [0, 1])) {
-        return response()->json(['error' => 'Tipo de proveedor inválido'], 422);
-    }
+        // Validar tipo proveedor
+        if (!in_array($validated['id_type'], [0, 1])) {
+            return response()->json(['error' => 'Tipo de proveedor inválido'], 422);
+        }
+
+        // Subida de evidencia
+        if ($request->hasFile('url_evidence')) {
+            $result = UploadDataToCloudinary::uploadImage(
+                'provider-'.$validated['code_provider'],
+                $request->file('url_evidence'),
+                'providers/evidence'
+            );
+            $validated['url_evidence'] = $result['secure_url'];
+            $validated['public_id_evidence'] = $result['public_id'];
+        }
+
         $provider = Provider::create($validated);
         $provider->load(['personType', 'status', 'user']);
 
         return response()->json([
             'message' => 'Proveedor creado correctamente',
-            'data' => $this->transformProvider($provider)
+            'data' => new ProviderResource($provider),
         ], 201);
     }
 
-    /**
-     * Actualizar un proveedor existente
-     */
+    // Actualizar proveedor
     public function update(UpdateProviderRequest $request, $id)
     {
         $provider = Provider::findOrFail($id);
-        $validated = $request->validated();
+        $data = $request->validated();
 
-        $typeLabels = [
-            0 => 'Proveedor de bienes',
-            1 => 'Proveedor de materiales',
-        ];
-
-        if (isset($validated['id_type'])) {
-            $validated['id_type'] = [
-                'type' => $validated['id_type'],
-                'label' => $typeLabels[$validated['id_type']],
-            ];
+        if (isset($data['id_type']) && !in_array($data['id_type'], [0, 1])) {
+            return response()->json(['error' => 'Tipo de proveedor inválido'], 422);
         }
 
-        $provider->update($validated);
+        // Actualizar evidencia
+        if ($request->hasFile('url_evidence')) {
+
+            if ($provider->public_id_evidence) {
+                UploadDataToCloudinary::removeFile($provider->public_id_evidence);
+            }
+
+            $result = UploadDataToCloudinary::uploadImage(
+                'provider-'.$provider->id,
+                $request->file('url_evidence'),
+                'providers/evidence'
+            );
+
+            $data['url_evidence'] = $result['secure_url'];
+            $data['public_id_evidence'] = $result['public_id'];
+        }
+
+        $provider->update($data);
         $provider->load(['personType', 'status', 'user']);
 
         return response()->json([
             'message' => 'Proveedor actualizado correctamente',
-            'data' => $this->transformProvider($provider)
+            'data' => new ProviderResource($provider),
         ]);
     }
 
-    /**
-     * Eliminar un proveedor
-     */
+    // Eliminar proveedor completo
     public function destroy($id)
     {
         $provider = Provider::findOrFail($id);
+
+        if ($provider->public_id_evidence) {
+            UploadDataToCloudinary::removeFile($provider->public_id_evidence);
+        }
+
         $provider->delete();
 
-        return response()->json(['message' => 'Proveedor eliminado correctamente']);
+        return response()->json([
+            'message' => 'Proveedor y archivos eliminados correctamente.'
+        ]);
     }
 
-    /**
+    // Eliminar solo la evidencia
+    public function deleteEvidence($id)
+    {
+        $provider = Provider::findOrFail($id);
+
+        if (!$provider->public_id_evidence) {
+            return response()->json(['message' => 'No hay evidencia que eliminar'], 400);
+        }
+
+        $deleted = UploadDataToCloudinary::removeFile($provider->public_id_evidence);
+
+        if ($deleted) {
+            $provider->update([
+                'url_evidence' => null,
+                'public_id_evidence' => null
+            ]);
+            return response()->json(['message' => 'Evidencia eliminada correctamente']);
+        }
+
+        return response()->json(['message' => 'No se pudo eliminar la evidencia en Cloudinary']);
+    }
+
+     /**
      * Transformar proveedor para respuesta limpia
      */
     private function transformProvider(Provider $provider)
@@ -137,19 +189,15 @@ class ProviderController extends Controller
         ];
     }
 
-    /**
-     * Obtener tipos de persona
-     */
+    // Obtener tipos de persona
     public function personTypes()
     {
-        return response()->json(['data' => \App\Models\Inventory\PersonType::all()]);
+        return response()->json(['data' => PersonType::all()]);
     }
 
-    /**
-     * Obtener estados disponibles
-     */
+    // Obtener estados
     public function statuses()
     {
-        return response()->json(['data' => \App\Models\Inventory\Status::all()]);
+        return response()->json(['data' => Status::all()]);
     }
 }

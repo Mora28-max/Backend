@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Inventory;
+
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -22,7 +23,7 @@ class StoreProviderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            
+
             'name' => 'required|string|max:255',
             'rfc' => 'required|string|max:50|unique:providers',
             'person_type_id' => 'required|exists:person_types,id',
@@ -30,7 +31,7 @@ class StoreProviderRequest extends FormRequest
             'address' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
             'email' => 'required|email|max:255',
-            'url_evidence' => 'nullable|string|max:255',
+            'url_evidence' => 'nullable|file|mimes:jpeg,png,jpg,gif|max:2048',
             'id_type' => 'required|integer|in:0,1',
         ];
     }
