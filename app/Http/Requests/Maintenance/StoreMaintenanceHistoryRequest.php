@@ -19,7 +19,7 @@ class StoreMaintenanceHistoryRequest extends FormRequest
         'id_type_maintenance' => 'required|exists:type_maintenances,id',
         'id_user' => 'sometimes|exists:users,id',
         'observations' => 'sometimes|string',
-        'cost' => 'required|numeric|min:0',
+        'cost' => 'nullable|numeric|min:0',
         'next_maintenance_date' => 'sometimes|date|after_or_equal:date',
         'code' => 'nullable|string|max:255',
     ];
