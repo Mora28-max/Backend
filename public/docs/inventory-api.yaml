@@ -1,0 +1,968 @@
+openapi: 3.0.3
+
+info:
+  title: Inventory & Maintenance API
+  description: Documentación completa de la API de inventario, mantenimiento y autenticación
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8000/api
+    description: Servidor local
+
+tags:
+  - name: Authentication
+    description: Endpoints de autenticación
+  - name: Providers
+  - name: Materials
+  - name: Goods
+  - name: Maintenance
+
+# =========================
+# 🔐 SEGURIDAD GLOBAL JWT
+# =========================
+security:
+  - bearerAuth: []
+
+paths:
+  # =========================
+  # 🔐 AUTENTICACIÓN
+  # =========================
+
+  /customer-view/register:
+    post:
+      summary: Registrar cliente
+      tags: [Authentication]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password, password_confirmation]
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                password_confirmation:
+                  type: string
+      responses:
+        "201":
+          description: Usuario registrado correctamente
+
+  /customer-view/login:
+    post:
+      summary: Iniciar sesión
+      tags: [Authentication]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Login exitoso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+
+  /customer-view/logout:
+    post:
+      summary: Cerrar sesión
+      tags: [Authentication]
+      responses:
+        "200":
+          description: Sesión cerrada correctamente
+
+  /customer-view/verify-token:
+    post:
+      summary: Verificar token
+      tags: [Authentication]
+      responses:
+        "200":
+          description: Token válido
+
+  # =========================
+  # 📦 PROVIDERS
+  # =========================
+
+  /inventory/providers:
+    get:
+      summary: Listar todos los proveedores
+      tags: [Providers]
+      responses:
+        "200":
+          description: Lista de proveedores
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Provider"
+
+    post:
+      summary: Crear proveedor
+      tags: [Providers]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - rfc
+                - person_type_id
+                - status_id
+                - address
+                - phone
+                - email
+                - id_type
+              properties:
+                name:
+                  type: string
+                rfc:
+                  type: string
+                person_type_id:
+                  type: integer
+                status_id:
+                  type: integer
+                address:
+                  type: string
+                phone:
+                  type: string
+                email:
+                  type: string
+                id_type:
+                  type: integer
+                  enum: [0, 1]
+
+      responses:
+        "201":
+          description: Proveedor creado correctamente
+        "422":
+          description: Error de validación
+
+  /inventory/providers/{id}:
+    get:
+      summary: Obtener proveedor por ID
+      tags: [Providers]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Proveedor encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Provider"
+        "404":
+          description: Proveedor no encontrado
+
+    post:
+      summary: Actualizar proveedor
+      tags: [Providers]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                rfc:
+                  type: string
+                person_type_id:
+                  type: integer
+                status_id:
+                  type: integer
+                address:
+                  type: string
+                phone:
+                  type: string
+                email:
+                  type: string
+                id_type:
+                  type: integer
+                  enum: [0, 1]
+
+      responses:
+        "200":
+          description: Proveedor actualizado
+        "404":
+          description: Proveedor no encontrado
+
+    delete:
+      summary: Eliminar proveedor
+      tags: [Providers]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Proveedor eliminado
+        "404":
+          description: Proveedor no encontrado
+
+  /inventory/providers/{id}/evidence:
+    delete:
+      summary: Eliminar imagen de evidencia del proveedor
+      tags: [Providers]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Imagen eliminada correctamente
+        "404":
+          description: Proveedor no encontrado
+
+  # =========================
+  # 🧱 INVENTORY MATERIALS
+  # =========================
+
+  /inventory/materials:
+    get:
+      summary: Listar todos los materiales
+      tags: [Materials]
+      responses:
+        "200":
+          description: Lista de materiales
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/InventoryMaterial"
+
+    post:
+      summary: Crear material
+      tags: [Materials]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - stock
+                - stock_min
+                - cost
+                - provider_id
+                - unit_type_id
+              properties:
+                name:
+                  type: string
+                stock:
+                  type: integer
+                stock_min:
+                  type: integer
+                description:
+                  type: string
+                  nullable: true
+                cost:
+                  type: number
+                provider_id:
+                  type: integer
+                unit_type_id:
+                  type: integer
+
+      responses:
+        "201":
+          description: Material creado correctamente
+        "422":
+          description: Error de validación
+
+  /inventory/materials/{id}:
+    get:
+      summary: Obtener material por ID
+      tags: [Materials]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Material encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InventoryMaterial"
+        "404":
+          description: Material no encontrado
+
+    post:
+      summary: Actualizar material
+      tags: [Materials]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                stock:
+                  type: integer
+                stock_min:
+                  type: integer
+                description:
+                  type: string
+                  nullable: true
+                cost:
+                  type: number
+                provider_id:
+                  type: integer
+                unit_type_id:
+                  type: integer
+
+      responses:
+        "200":
+          description: Material actualizado correctamente
+        "404":
+          description: Material no encontrado
+
+    delete:
+      summary: Eliminar material
+      tags: [Materials]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Material eliminado correctamente
+        "404":
+          description: Material no encontrado
+
+  /inventory/materials/{id}/evidence:
+    delete:
+      summary: Eliminar imagen del material
+      tags: [Materials]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Imagen eliminada correctamente
+
+  /inventory/materials/{id}/invoice:
+    delete:
+      summary: Eliminar factura del material
+      tags: [Materials]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Factura eliminada correctamente
+
+  # =========================
+  # 🧾 GOODS (BIENES)
+  # =========================
+
+  /inventory/goods:
+    get:
+      summary: Listar todos los bienes
+      tags: [Goods]
+      responses:
+        "200":
+          description: Lista de bienes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Goods"
+
+    post:
+      summary: Crear bien
+      tags: [Goods]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - id_status
+                - stock
+                - id_category
+                - provider_id
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                brand:
+                  type: string
+                  nullable: true
+                id_status:
+                  type: integer
+                stock:
+                  type: integer
+                id_category:
+                  type: integer
+                provider_id:
+                  type: integer
+
+      responses:
+        "201":
+          description: Bien creado correctamente
+        "422":
+          description: Error de validación
+
+  /inventory/goods/{id}:
+    get:
+      summary: Obtener bien por ID
+      tags: [Goods]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Bien encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Goods"
+        "404":
+          description: Bien no encontrado
+
+    post:
+      summary: Actualizar bien
+      tags: [Goods]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                brand:
+                  type: string
+                  nullable: true
+                id_status:
+                  type: integer
+                stock:
+                  type: integer
+                id_category:
+                  type: integer
+                provider_id:
+                  type: integer
+
+      responses:
+        "200":
+          description: Bien actualizado correctamente
+        "404":
+          description: Bien no encontrado
+
+    delete:
+      summary: Eliminar bien
+      tags: [Goods]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Bien eliminado correctamente
+        "404":
+          description: Bien no encontrado
+
+  /inventory/goods/{id}/image:
+    delete:
+      summary: Eliminar imagen del bien
+      tags: [Goods]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Imagen eliminada correctamente
+
+  /inventory/goods/{id}/invoice:
+    delete:
+      summary: Eliminar factura del bien
+      tags: [Goods]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description:
+            Factura eliminada correctamente
+
+            # =========================
+  # 🛠 MAINTENANCE HISTORIES
+  # =========================
+
+  /maintenance/maintenance_histories:
+    get:
+      summary: Listar todos los historiales de mantenimiento
+      tags: [Maintenance]
+      responses:
+        "200":
+          description: Lista de historiales de mantenimiento
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MaintenanceHistory"
+
+    post:
+      summary: Crear historial de mantenimiento
+      tags: [Maintenance]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - date
+                - id_goods
+                - id_type_maintenance
+              properties:
+                date:
+                  type: string
+                  format: date
+                id_goods:
+                  type: integer
+                id_type_maintenance:
+                  type: integer
+                observations:
+                  type: string
+                next_maintenance_date:
+                  type: string
+                  format: date
+      responses:
+        "201":
+          description: Historial creado correctamente
+        "422":
+          description: Error de validación
+
+  /maintenance/maintenance_histories/{id}:
+    get:
+      summary: Obtener historial de mantenimiento por ID
+      tags: [Maintenance]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Historial encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MaintenanceHistory"
+        "404":
+          description: Historial no encontrado
+
+    post:
+      summary: Actualizar historial de mantenimiento
+      tags: [Maintenance]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                  format: date
+                id_goods:
+                  type: integer
+                id_type_maintenance:
+                  type: integer
+                observations:
+                  type: string
+                next_maintenance_date:
+                  type: string
+                  format: date
+
+      responses:
+        "200":
+          description: Historial actualizado correctamente
+        "404":
+          description: Historial no encontrado
+
+    delete:
+      summary: Eliminar historial de mantenimiento
+      tags: [Maintenance]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Historial eliminado correctamente
+        "404":
+          description: Historial no encontrado
+
+          paths:
+  /inventory/unities:
+    get:
+      summary: Listar todas las unidades
+      tags: [Unities]
+      responses:
+        "200":
+          description: Lista de unidades
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Unity"
+
+  /inventory/categories:
+    get:
+      summary: Listar todas las categorías de bienes
+      tags: [Categories]
+      responses:
+        "200":
+          description: Lista de categorías
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+
+  /inventory/goods_status:
+    get:
+      summary: Listar todos los estados de bienes
+      tags: [GoodsStatus]
+      responses:
+        "200":
+          description: Lista de estados de bienes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GoodsStatus"
+
+  /inventory/person_types:
+    get:
+      summary: Listar todos los tipos de persona
+      tags: [PersonTypes]
+      responses:
+        "200":
+          description: Lista de tipos de persona
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PersonType"
+
+  /inventory/statuses:
+    get:
+      summary: Listar todos los estatus generales
+      tags: [Statuses]
+      responses:
+        "200":
+          description: Lista de estatus generales
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Status"
+
+  /maintenance/type_maintenances:
+    get:
+      summary: Listar todos los tipos de mantenimiento
+      tags: [TypeMaintenances]
+      responses:
+        "200":
+          description: Lista de tipos de mantenimiento
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TypeMaintenance"
+
+# =========================
+# 🔐 TOKEN JWT + SCHEMA
+# =========================
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Provider:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        rfc:
+          type: string
+        person_type_id:
+          type: integer
+        status_id:
+          type: integer
+        address:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        id_type:
+          type: integer
+        url_evidence:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    InventoryMaterial:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        stock:
+          type: integer
+        stock_min:
+          type: integer
+        description:
+          type: string
+          nullable: true
+        cost:
+          type: number
+        url_evidence:
+          type: string
+          nullable: true
+        url_invoice:
+          type: string
+          nullable: true
+        provider_id:
+          type: integer
+        unit_type_id:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Goods:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        brand:
+          type: string
+          nullable: true
+        id_status:
+          type: integer
+        stock:
+          type: integer
+        id_category:
+          type: integer
+        provider_id:
+          type: integer
+        code_goods:
+          type: string
+          nullable: true
+        url_evidence:
+          type: string
+          nullable: true
+        url_invoice:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    MaintenanceHistory:
+      type: object
+      properties:
+        id:
+          type: integer
+        date:
+          type: string
+          format: date
+        id_goods:
+          type: integer
+        id_type_maintenance:
+          type: integer
+        id_user:
+          type: integer
+          nullable: true
+        observations:
+          type: string
+          nullable: true
+        cost:
+          type: number
+          nullable: true
+        next_maintenance_date:
+          type: string
+          format: date
+          nullable: true
+        code:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Unity:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    GoodsStatus:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    PersonType:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    Status:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    TypeMaintenance:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string

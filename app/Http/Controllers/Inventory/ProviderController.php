@@ -20,7 +20,7 @@ class ProviderController extends Controller
     {
         $search = $request->input('search');
 
-        $query = Provider::with(['personType', 'status', 'user'])->orderBy('id', 'asc');
+        $query = Provider::with(['personType', 'status', 'user'])->orderBy('id', 'desc');
 
         if ($search) {
             $query->where(function ($q) use ($search) {

@@ -20,7 +20,7 @@ class GoodsController extends Controller
     {
         $search = $request->input('search');
 
-        $query = Goods::with(['status', 'category', 'provider']);
+        $query = Goods::with(['status', 'category', 'provider'])->orderBy('created_at', 'desc');
 
         if ($search) {
             $query->where(function ($q) use ($search) {

@@ -28,18 +28,26 @@ class GoodsResource extends JsonResource
             'updated_at' => $this->updated_at,
 
             // Relaciones
-            'status' => $this->whenLoaded('status', [
-                'id' => $this->status->id,
-                'name' => $this->status->name,
-            ]),
-            'category' => $this->whenLoaded('category', [
-                'id' => $this->category->id,
-                'name' => $this->category->name,
-            ]),
-            'provider' => $this->whenLoaded('provider', [
-                'id' => $this->provider->id,
-                'name' => $this->provider->name,
-            ]),
+            'status' => $this->whenLoaded('status', function() {
+                return $this->status ? [
+                    'id' => $this->status->id,
+                    'name' => $this->status->name,
+                ] : null;
+            }),
+
+            'category' => $this->whenLoaded('category', function() {
+                return $this->category ? [
+                    'id' => $this->category->id,
+                    'name' => $this->category->name,
+                ] : null;
+            }),
+
+            'provider' => $this->whenLoaded('provider', function() {
+                return $this->provider ? [
+                    'id' => $this->provider->id,
+                    'name' => $this->provider->name,
+                ] : null;
+            }),
         ];
     }
 }

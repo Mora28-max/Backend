@@ -21,7 +21,7 @@ class InventoryMaterialController extends Controller
     {
         $search = $request->input('search');
 
-        $query = InventoryMaterial::with(['provider', 'unit']);
+        $query = InventoryMaterial::with(['provider', 'unit'])->orderBy('created_at', 'desc');
 
         if ($search) {
             $query->where(function ($q) use ($search) {

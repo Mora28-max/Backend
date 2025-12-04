@@ -23,6 +23,6 @@ Route::prefix('maintenance')->name('maintenance.')->group(function () {
     Route::get('maintenance_histories', [MaintenanceHistoryController::class, 'index']);
     Route::post('maintenance_histories', [MaintenanceHistoryController::class, 'store']);
     Route::get('maintenance_histories/{id}', [MaintenanceHistoryController::class, 'show']);
-    Route::post('maintenance_histories/{id}', [MaintenanceHistoryController::class, 'update']); // antes era POST, ahora PUT
+    Route::post('maintenance_histories/{id}', [MaintenanceHistoryController::class, 'update']); 
     Route::delete('maintenance_histories/{id}', [MaintenanceHistoryController::class, 'destroy']);
 });

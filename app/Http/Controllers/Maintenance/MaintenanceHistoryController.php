@@ -38,7 +38,7 @@ class MaintenanceHistoryController extends Controller
 
     // Ordenar y paginar
     $history = $query
-        ->orderBy('id', 'asc')
+        ->orderBy('id', 'desc')
         ->paginate(25)
         ->withQueryString();
 
