@@ -10,12 +10,18 @@ servers:
     description: Servidor local
 
 tags:
+  - name: Authentication Cliente
   - name: Authentication
-    description: Endpoints de autenticación
   - name: Providers
   - name: Materials
   - name: Goods
   - name: Maintenance
+  - name: Unities
+  - name: Categories
+  - name: GoodsStatus
+  - name: PersonTypes
+  - name: Statuses
+  - name: TypeMaintenances
 
 # =========================
 # 🔐 SEGURIDAD GLOBAL JWT
@@ -31,7 +37,7 @@ paths:
   /customer-view/register:
     post:
       summary: Registrar cliente
-      tags: [Authentication]
+      tags: [Authentication Cliente]
       security: []
       requestBody:
         required: true
@@ -56,7 +62,7 @@ paths:
   /customer-view/login:
     post:
       summary: Iniciar sesión
-      tags: [Authentication]
+      tags: [Authentication Cliente]
       security: []
       requestBody:
         required: true
@@ -84,7 +90,7 @@ paths:
   /customer-view/logout:
     post:
       summary: Cerrar sesión
-      tags: [Authentication]
+      tags: [Authentication Cliente]
       responses:
         "200":
           description: Sesión cerrada correctamente
@@ -92,10 +98,80 @@ paths:
   /customer-view/verify-token:
     post:
       summary: Verificar token
-      tags: [Authentication]
+      tags: [Authentication Cliente]
       responses:
         "200":
           description: Token válido
+
+    # =========================
+  # 🔐 AUTENTICACIÓN JWT
+  # =========================
+
+  /login:
+    post:
+      summary: Iniciar sesión y obtener token
+      tags: [Authentication]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Usuario y token de acceso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResource"
+        "401":
+          description: Credenciales inválidas
+
+  /register:
+    post:
+      summary: Registrar un nuevo usuario
+      tags: [Authentication]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+      responses:
+        "201":
+          description: Usuario registrado exitosamente
+        "400":
+          description: Error de validación
+
+  /logout:
+    post:
+      summary: Cerrar sesión
+      tags: [Authentication]
+      responses:
+        "204":
+          description: Sesión cerrada exitosamente
+        "401":
+          description: Error de autorización
+
+  /register/invitation:
+    post:
+      summary: Enviar invitación de registro
+      tags: [Authentication]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InvitationRequest"
+      responses:
+        "201":
+          description: Invitación enviada
+        "400":
+          description: Error de validación
 
   # =========================
   # 📦 PROVIDERS
@@ -965,4 +1041,14 @@ components:
         id:
           type: integer
         name:
+          type: string
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
           type: string

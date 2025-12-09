@@ -31,7 +31,7 @@ class UpdateProviderRequest extends FormRequest
             'address' => 'sometimes|required|string|max:255',
             'phone' => 'sometimes|required|string|max:20',
             'email' => 'sometimes|required|email|max:255',
-            'url_evidence' => 'nullable|string|max:255',
+            'url_evidence' => 'sometimes|nullable|file|mimes:jpeg,png,jpg,gif|max:2048',
             'id_type' => 'sometimes|required|integer|in:0,1',
         ];
     }
