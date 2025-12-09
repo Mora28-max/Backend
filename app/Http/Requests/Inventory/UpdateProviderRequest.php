@@ -26,6 +26,7 @@ class UpdateProviderRequest extends FormRequest
                 
             'name' => 'sometimes|required|string|max:255',
             'rfc' => 'sometimes|required|string|max:50|unique:providers,rfc,' . $this->route('id'),
+            'provider_key' => 'sometimes|nullable|string|max:100',
             'person_type_id' => 'sometimes|required|exists:person_types,id',
             'status_id' => 'sometimes|required|exists:statuses,id',
             'address' => 'sometimes|required|string|max:255',

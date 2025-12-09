@@ -26,6 +26,7 @@ class StoreProviderRequest extends FormRequest
 
             'name' => 'required|string|max:255',
             'rfc' => 'required|string|max:50|unique:providers',
+            'provider_key' => 'nullable|string|max:100',
             'person_type_id' => 'required|exists:person_types,id',
             'status_id' => 'required|exists:statuses,id',
             'address' => 'required|string|max:255',

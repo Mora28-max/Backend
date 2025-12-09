@@ -19,6 +19,7 @@ class ProvidersTableSeeder extends Seeder
             [
                 'name' => 'Herramientas López',
                 'rfc' => 'LOPF789456CD2',
+                'provider_key' => 'HLOP001',
                 'person_type_id' => 1, // Física
                 'address' => 'Av. Morelos #45, Guadalajara',
                 'phone' => '3337894561',
@@ -31,6 +32,7 @@ class ProvidersTableSeeder extends Seeder
             [
                 'name' => 'Proveedor Eléctrico S.A.',
                 'rfc' => 'ELEC123456AB7',
+                'provider_key' => 'HLOP001',
                 'person_type_id' => 2, // Moral
                 'address' => 'Av. Central #45, Ciudad de México',
                 'phone' => '5551234567',
@@ -43,6 +45,7 @@ class ProvidersTableSeeder extends Seeder
             [
                 'name' => 'Materiales Industriales del Norte',
                 'rfc' => 'MIN980765PL2',
+                'provider_key' => 'HLOP001',
                 'person_type_id' => 2, // Moral
                 'address' => 'Calle Hidalgo #22, Monterrey, NL',
                 'phone' => '8112345678',

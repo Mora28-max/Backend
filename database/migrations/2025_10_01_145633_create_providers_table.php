@@ -14,7 +14,8 @@
             Schema::create('providers', function (Blueprint $table) {
                 $table->id(); // PK auto-increment
                 $table->string('name');
-                $table->string('code_provider')->nullable(); 
+                $table->string('code_provider')->nullable();
+                $table->string('provider_key')->nullable(); 
                 $table->string('rfc');
                 $table->string('address');
                 $table->string('phone');
