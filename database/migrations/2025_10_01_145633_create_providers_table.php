@@ -16,13 +16,13 @@
                 $table->string('name');
                 $table->string('code_provider')->nullable();
                 $table->string('provider_key')->nullable(); 
-                $table->string('rfc');
-                $table->string('address');
-                $table->string('phone');
-                $table->string('email');
-                $table->unsignedBigInteger('id_user');          // FK a users
-                $table->unsignedBigInteger('person_type_id');   // FK a person_types
-                $table->unsignedBigInteger('status_id');        // FK a statuses
+                $table->string('rfc')->nullable();
+                $table->string('address')->nullable();
+                $table->string('phone')->nullable();
+                $table->string('email')->nullable();
+                $table->unsignedBigInteger('id_user')->nullable();          // FK a users
+                $table->unsignedBigInteger('person_type_id')->nullable();   // FK a person_types
+                $table->unsignedBigInteger('status_id')->nullable();        // FK a statuses
                 $table->string('url_evidence')->nullable();       // Evidencia opcional
                 $table->string('public_id_evidence')->nullable(); // <-- NUEVO
 

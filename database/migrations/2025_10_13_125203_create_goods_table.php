@@ -14,11 +14,12 @@ return new class extends Migration
         Schema::create('goods', function (Blueprint $table) {
             $table->id(); // id_goods int auto-increment
             $table->string('name');
+            $table->string('code_goods')->nullable();
             $table->text('description')->nullable();
             $table->string('brand')->nullable();
-            $table->unsignedBigInteger('id_status'); // FK a goods_status
+            $table->unsignedBigInteger('id_status')->nullable(); // FK a goods_status
             $table->integer('stock')->default(0);
-            $table->unsignedBigInteger('id_category'); // FK a categories
+            $table->unsignedBigInteger('id_category')->nullable(); // FK a categories
             
             $table->string('url_evidence')->nullable();       // Evidencia opcional
             $table->string('public_id_evidence')->nullable(); // <-- NUEVO
@@ -27,7 +28,7 @@ return new class extends Migration
             $table->string('public_id_invoice')->nullable();  // <-- NUEVO (opcional)
 
             $table->unsignedBigInteger('id_user'); // FK a users
-            $table->unsignedBigInteger('id_provider'); // FK a providers
+            $table->unsignedBigInteger('id_provider')->null(); // FK a providers
             $table->timestamps();
 
             // Relaciones

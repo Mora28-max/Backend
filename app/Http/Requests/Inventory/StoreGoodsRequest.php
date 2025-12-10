@@ -20,7 +20,7 @@ class StoreGoodsRequest extends FormRequest
             'id_status' => 'required|exists:goods_status,id',
             'stock' => 'required|integer|min:0',
             'id_category' => 'required|exists:categories,id',
-            'provider_id' => 'required|exists:providers,id', // del request, luego se mapeará a id_provider
+            'provider_id' => 'nullable|exists:providers,id', // del request, luego se mapeará a id_provider
             'code_goods' => 'nullable|string|max:50',
             'url_evidence' => 'nullable|file|mimes:jpeg,png,jpg,gif|max:2048',
             'url_invoice' => 'nullable|file|mimes:pdf,jpeg,png,jpg|max:4096',
