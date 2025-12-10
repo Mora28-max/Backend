@@ -25,15 +25,15 @@ class StoreProviderRequest extends FormRequest
         return [
 
             'name' => 'required|string|max:255',
-            'rfc' => 'required|string|max:50|unique:providers',
+            'rfc' => 'nullable|string|max:50|unique:providers',
             'provider_key' => 'nullable|string|max:100',
-            'person_type_id' => 'required|exists:person_types,id',
-            'status_id' => 'required|exists:statuses,id',
-            'address' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'email' => 'required|email|max:255',
+            'person_type_id' => 'nullable|exists:person_types,id',
+            'status_id' => 'nullable|exists:statuses,id',
+            'address' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255',
             'url_evidence' => 'nullable|file|mimes:jpeg,png,jpg,gif|max:2048',
-            'id_type' => 'required|integer|in:0,1',
+            'id_type' => 'nullable|integer|in:0,1',
         ];
     }
 
