@@ -2,9 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/docs/inventory-ui', function () {
-    return view('swagger'); // carga swagger.blade.php
+Route::get('/api/documentation', function () {
+    return view('swagger');
 });
 
+Route::get('/docs/inventory-ui', function () {
+    return view('swagger');
+});
     
 

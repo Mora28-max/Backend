@@ -23,7 +23,8 @@ return [
                 /*
                 * Edit to set path where swagger ui assets should be stored
                 */
-                'swagger_ui_assets_path' => env('L5_SWAGGER_UI_ASSETS_PATH', ''),
+                'swagger_ui_assets_path' => env('L5_SWAGGER_UI_ASSETS_PATH', 'vendor/swagger-ui'),
+
 
                 /*
                  * File name of the generated json documentation file
@@ -33,7 +34,7 @@ return [
                 /*
                  * File name of the generated YAML documentation file
                  */
-                'docs_yaml' => 'api-docs.yaml',
+                'docs_yaml' => 'docs/inventory-api.yaml',
 
                 /*
                  * Set this to `json` or `yaml` to determine which documentation file to use in UI
